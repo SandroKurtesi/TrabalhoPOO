@@ -18,7 +18,7 @@ Jardim::~Jardim() {
 
 void Jardim::mostrar() const {
     cout << " ";
-    // cout << "  ";  depois quero usar este pra muita estetica
+    // cout << "  ";  depois quero usar este pra estetica
 
     for (int j = 0; j < colunas; ++j) {
         cout << char('A' + j);
