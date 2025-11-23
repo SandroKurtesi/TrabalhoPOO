@@ -1,0 +1,3 @@
+C:/Users/Asus/Desktop/LEI/4º ANO/POO/tp_meta1/tp_meta1/cmake-build-debug/CMakeFiles/tp.dir
+C:/Users/Asus/Desktop/LEI/4º ANO/POO/tp_meta1/tp_meta1/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Asus/Desktop/LEI/4º ANO/POO/tp_meta1/tp_meta1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
