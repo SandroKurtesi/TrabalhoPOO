@@ -1,0 +1,11 @@
+/cmake-build-debug/
+# Ficheiros e pastas gerados pelo CMake/CLion
+/cmake-build-*/
+*.user
+*.iml
+
+# Binários e ficheiros executáveis
+/build/
+*.o
+*.out
+*.exe
