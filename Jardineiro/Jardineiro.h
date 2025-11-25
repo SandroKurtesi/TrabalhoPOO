@@ -4,11 +4,14 @@
 #define TP_JARDINEIRO_H
 
 #include <iostream>
+#include <vector>
+#include "../Ferramentas/Ferramenta.h"
 
 class Jardineiro {
     int linha = -1, coluna = -1;
     bool dentro = false;
 
+    std::vector<Ferramenta*> inventario;
 public:
     Jardineiro() = default; // indica ao compilador para disponibilizar o construtor por omissão
 
@@ -25,6 +28,9 @@ public:
     void moverDireita(int maxColunas);
 
     char getRepresentacao() const { return '*'; }
+
+    void guardarFerramenta(Ferramenta* f);
+    const std::vector<Ferramenta*>& getInventario() const;
 };
 
 #endif //TP_JARDINEIRO_H

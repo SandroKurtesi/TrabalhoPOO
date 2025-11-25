@@ -1,6 +1,10 @@
 
 
 #include "Simulador.h"
+#include "../Ferramentas/tipos/Regador/Regador.h"
+#include "../Ferramentas/tipos/Adubo/Adubo.h"
+#include "../Ferramentas/tipos/Tesoura/Tesoura.h"
+#include "../Ferramentas/tipos/FerramentaZ/FerramentaZ.h"
 #include <iostream>
 #include <sstream>
 
@@ -165,7 +169,19 @@ void Simulador::processarComando(const string &linha) {
             cout << "Crie primeiro o jardim.\n";
             return;
         }
-        cout << "Comando 'lferr' reconhecido, nao implementado ainda.\n";
+        const vector<Ferramenta*>& mochila = jardim->getJardineiro().getInventario();
+
+        cout << "=== INVENTARIO DO JARDINEIRO ===\n";
+        if (mochila.empty()) {
+            cout << "(Vazio)\n";
+        } else {
+
+            for (Ferramenta* f : mochila) {
+                cout << " - " << f->getTipo() << " (ID: " << f->getId() << ")";
+
+                cout << "\n";
+            }
+        }
     }
     else if (cmd == "colhe") {
         if (!jardim) {
@@ -235,15 +251,32 @@ void Simulador::processarComando(const string &linha) {
         }
 
         string tipo;
-        if (iss >> tipo && tipo.size() == 1) {
-            char t = tolower(tipo[0]);
-            if (t == 'g' || t == 'a' || t == 't' || t == 'z') {
-                cout << "Comando 'compra' reconhecido para ferramenta " << t << ", nao implementado ainda.\n";
+        if (iss >> tipo) {
+            Ferramenta* nova = nullptr;
+
+            // Factory de Ferramentas (igual à do Jardim)
+            if (tipo == "regador" || tipo == "g") {
+                nova = new Regador(); // Sem coordenadas = vai para o inventário
+            }
+            else if (tipo == "adubo" || tipo == "a") {
+                nova = new Adubo();
+            }
+            else if (tipo == "tesoura" || tipo == "t") {
+                nova = new Tesoura();
+            }
+            else if (tipo == "z") {
+                nova = new FerramentaZ();
+            }
+
+            if (nova != nullptr) {
+                // --- AQUI ESTÁ A LIGAÇÃO ---
+                jardim->getJardineiro().guardarFerramenta(nova);
+                cout << "Ferramenta " << nova->getTipo() << " comprada e guardada no inventario.\n";
             } else {
-                cout << "Tipo de ferramenta invalido. Use: g, a, t ou z\n";
+                cout << "Tipo de ferramenta invalido (g, a, t, z).\n";
             }
         } else {
-            cout << "Uso: compra <c> (ex: compra a)\n";
+            cout << "Uso: compra <tipo> (ex: compra a)\n";
         }
     }
     else if (cmd == "grava") {
