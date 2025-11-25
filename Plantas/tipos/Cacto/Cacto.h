@@ -3,6 +3,7 @@
 #ifndef TP_CACTO_H
 #define TP_CACTO_H
 #include "../../Planta.h"
+#include"../../../Settings.h"
 
 
 class Cacto : public Planta {
@@ -10,12 +11,14 @@ class Cacto : public Planta {
     int instantesSemNutrientes = 0;
 
 public:
-    Cacto() : Planta(0, 0, Beleza::NEUTRA) {}
+    Cacto(int l, int c)
+            : Planta(l, c, 0, 0, Beleza::NEUTRA)
+    {}
 
     void atualizar(Solo &solo) override;
     bool podemMultiplicar(const Solo &solo) const override;
 
-    char getRepresentação() const override { return 'c'; }
+    char getRepresentacao() const override { return 'c'; }
     std::string getTipo() const override { return "Cacto"; }
 };
 

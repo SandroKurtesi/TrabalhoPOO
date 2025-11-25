@@ -3,6 +3,7 @@
 #ifndef TP_ERVADANINHA_H
 #define TP_ERVADANINHA_H
 #include "../../Planta.h"
+#include"../../../Settings.h"
 
 
 class ErvaDaninha : public Planta {
@@ -10,12 +11,12 @@ class ErvaDaninha : public Planta {
     int ultimoMultiplicar = 0;
 
 public:
-    ErvaDaninha() : Planta(5, 5, Beleza::FEIA) {}
+    ErvaDaninha(int l,int c) : Planta( l, c,Settings::ErvaDaninha::inicial_agua,Settings::ErvaDaninha::inicial_nutrientes,Beleza::FEIA) {}
 
     void atualizar(Solo& solo) override;
     bool podemMultiplicar(const Solo &solo) const override;
 
-    char getRepresentação() const override { return 'e'; }
+    char getRepresentacao() const override { return 'e'; }
     std::string getTipo() const override { return "ErvaDaninha"; }
 };
 

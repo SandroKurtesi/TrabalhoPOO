@@ -187,12 +187,22 @@ void Simulador::processarComando(const string &linha) {
         }
 
         string pos, tipo;
-        if (iss >> pos >> tipo && pos.size() == 2 && tipo.size() == 1) {
-            char t = tolower(tipo[0]);
-            if (t == 'c' || t == 'r' || t == 'e' || t == 'x') {
-                cout << "Comando 'planta' reconhecido para posicao " << pos << " tipo " << t << ", nao implementado ainda.\n";
+        // Lê a posição (ex: "aa") e o tipo (ex: "r")
+        if (iss >> pos >> tipo && pos.size() == 2) {
+
+            // Converter as letras em coordenadas (a->0, b->1, etc.)
+            // Usamos tolower para funcionar com 'A' ou 'a'
+            int l = tolower(pos[0]) - 'a';
+            int c = tolower(pos[1]) - 'a';
+
+            // Tenta adicionar a planta no Jardim
+            // A função adicionarPlanta já verifica se a posição é válida
+            // e se o tipo existe.
+            if (jardim->adicionarPlanta(tipo, l, c)) {
+                cout << "Planta inserida com sucesso.\n";
+                jardim->mostrar(); // Mostra o jardim atualizado logo de seguida
             } else {
-                cout << "Tipo de planta invalido. Use: c, r, e ou x\n";
+                cout << "Erro: Posicao invalida, ocupada ou tipo desconhecido.\n";
             }
         } else {
             cout << "Uso: planta <lc> <tipo> (ex: planta fb c)\n";
