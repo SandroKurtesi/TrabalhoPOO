@@ -1,5 +1,5 @@
 
-
+#include <fstream>
 #include "Simulador.h"
 #include "../Ferramentas/tipos/Regador/Regador.h"
 #include "../Ferramentas/tipos/Adubo/Adubo.h"
@@ -331,10 +331,27 @@ void Simulador::processarComando(const string &linha) {
         }
     }
     else if (cmd == "executa") {
+        string nomeFicheiro;
+        if (iss >> nomeFicheiro) {
+            ifstream ficheiro(nomeFicheiro);
 
-        string ficheiro;
-        if (iss >> ficheiro) {
-            cout << "Comando 'executa' reconhecido para ficheiro '" << ficheiro << "', nao implementado ainda.\n";
+            if (ficheiro.is_open()) {
+                cout << "A executar comandos do ficheiro '" << nomeFicheiro << "'...\n";
+                string linhaFicheiro;
+
+
+                while (getline(ficheiro, linhaFicheiro)) {
+
+                    if (linhaFicheiro.empty() || linhaFicheiro[0] == '#') continue;
+
+                    cout << ">> " << linhaFicheiro << "\n";
+                    processarComando(linhaFicheiro);
+                }
+                ficheiro.close();
+                cout << "Execucao do ficheiro terminada.\n";
+            } else {
+                cout << "Erro: Nao foi possivel abrir o ficheiro '" << nomeFicheiro << "'.\n";
+            }
         } else {
             cout << "Uso: executa <nome-do-ficheiro>\n";
         }
