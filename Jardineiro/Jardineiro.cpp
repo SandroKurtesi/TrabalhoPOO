@@ -61,3 +61,36 @@ void Jardineiro::moverDireita(int maxColunas) {
     if (coluna < maxColunas - 1) coluna++;
 }
 
+// Tenta ativar uma ferramenta do inventário pelo ID
+bool Jardineiro::pegarFerramenta(int id) {
+    // 1. Procurar a ferramenta no inventário
+    Ferramenta* encontrada = nullptr;
+    for (Ferramenta* f : inventario) {
+        if (f->getId() == id) {
+            encontrada = f;
+            break;
+        }
+    }
+    // Se não encontrou, falha
+    if (encontrada == nullptr) {
+        return false;
+    }
+
+    // 2. Se já tínhamos uma na mão, largamo-la primeiro
+    largarFerramenta();
+
+    // 3. Pegar na nova
+    ferramentaNaMao = encontrada;
+    ferramentaNaMao->setAtiva(true); // Marca como ativa na classe Ferramenta
+
+    return true;
+}
+
+// Desativa a ferramenta atual (guarda na mochila)
+void Jardineiro::largarFerramenta() {
+    if (ferramentaNaMao != nullptr) {
+        ferramentaNaMao->setAtiva(false); // Deixa de estar ativa
+        ferramentaNaMao = nullptr;        // A mão fica vazia
+    }
+}
+

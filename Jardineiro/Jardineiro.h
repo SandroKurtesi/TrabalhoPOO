@@ -12,6 +12,7 @@ class Jardineiro {
     bool dentro = false;
 
     std::vector<Ferramenta*> inventario;
+    Ferramenta* ferramentaNaMao = nullptr;
 public:
     Jardineiro() = default; // indica ao compilador para disponibilizar o construtor por omissão
 
@@ -31,6 +32,15 @@ public:
 
     void guardarFerramenta(Ferramenta* f);
     const std::vector<Ferramenta*>& getInventario() const;
+
+
+    bool pegarFerramenta(int id);
+
+
+    void largarFerramenta();
+
+
+    Ferramenta* getFerramentaNaMao() const { return ferramentaNaMao; }
 };
 
 #endif //TP_JARDINEIRO_H

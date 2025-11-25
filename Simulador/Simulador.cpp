@@ -165,20 +165,23 @@ void Simulador::processarComando(const string &linha) {
         }
     }
     else if (cmd == "lferr") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
-        const vector<Ferramenta*>& mochila = jardim->getJardineiro().getInventario();
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
-        cout << "=== INVENTARIO DO JARDINEIRO ===\n";
+        const vector<Ferramenta*>& mochila = jardim->getJardineiro().getInventario();
+        // Obter a ferramenta ativa para comparar
+        Ferramenta* ativa = jardim->getJardineiro().getFerramentaNaMao();
+
+        cout << "=== INVENTARIO ===\n";
         if (mochila.empty()) {
             cout << "(Vazio)\n";
         } else {
-
             for (Ferramenta* f : mochila) {
                 cout << " - " << f->getTipo() << " (ID: " << f->getId() << ")";
 
+                // Se for a ferramenta ativa, mostra indicação
+                if (f == ativa) {
+                    cout << " [NA MAO]";
+                }
                 cout << "\n";
             }
         }
@@ -225,23 +228,29 @@ void Simulador::processarComando(const string &linha) {
         }
     }
     else if (cmd == "larga") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
+
+        // Verifica se tem algo para largar
+        if (jardim->getJardineiro().getFerramentaNaMao() != nullptr) {
+            jardim->getJardineiro().largarFerramenta();
+            cout << "Ferramenta guardada na mochila.\n";
+        } else {
+            cout << "Nao tem nenhuma ferramenta na mao.\n";
         }
-        cout << "Comando 'larga' reconhecido, nao implementado ainda.\n";
     }
     else if (cmd == "pega") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
-        int n;
-        if (iss >> n) {
-            cout << "Comando 'pega' reconhecido para ferramenta " << n << ", nao implementado ainda.\n";
+        int id;
+        if (iss >> id) {
+            // Chama a função do Jardineiro
+            if (jardim->getJardineiro().pegarFerramenta(id)) {
+                cout << "Ferramenta " << id << " esta agora na mao.\n";
+            } else {
+                cout << "Erro: Ferramenta " << id << " nao encontrada no inventario.\n";
+            }
         } else {
-            cout << "Uso: pega <n> (ex: pega 7)\n";
+            cout << "Uso: pega <id> (ex: pega 1)\n";
         }
     }
     else if (cmd == "compra") {
