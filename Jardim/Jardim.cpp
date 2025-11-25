@@ -175,3 +175,39 @@ void Jardim::mostrar() const {
         cout << "\n";
     }
 }
+void Jardim::infoSolo(int l, int c) const {
+    // 1. Validar
+    if (l < 0 || l >= linhas || c < 0 || c >= colunas) {
+        cout << "Coordenadas invalidas.\n";
+        return;
+    }
+
+    // 2. Mostrar Dados do Solo
+    // (Nota: estou a assumir que tens getAgua() e getNutrientes() na classe Solo)
+    Solo& s = grelha[l][c];
+    cout << "--- INFO SOLO (" << char('A' + l) << char('A' + c) << ") ---\n";
+    cout << "Agua: " << s.getAgua() << " | Nutrientes: " << s.getNutrientes() << "\n";
+
+    // 3. O que esta aqui?
+    cout << "Ocupantes:\n";
+
+    // a) Jardineiro?
+    if (jardineiro.estaDentro() && jardineiro.getLinha() == l && jardineiro.getColuna() == c) {
+        cout << " - [JARDINEIRO]\n";
+    }
+
+    // b) Planta?
+    for (Planta* p : plantas) {
+        if (p->getLinha() == l && p->getColuna() == c) {
+            cout << " - [PLANTA] " << p->getTipo() << " (" << p->getRepresentacao() << ")\n";
+            // Futuramente podes mostrar mais detalhes da planta aqui
+        }
+    }
+
+    // c) Ferramentas?
+    for (Ferramenta* f : ferramentas) {
+        if (f->getLinha() == l && f->getColuna() == c) {
+            cout << " - [FERRAMENTA] " << f->getTipo() << " (ID: " << f->getId() << ")\n";
+        }
+    }
+}

@@ -148,20 +148,18 @@ void Simulador::processarComando(const string &linha) {
         cout << "Comando 'larea' reconhecido, nao implementado ainda.\n";
     }
     else if (cmd == "lsolo") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
         string pos;
-        int n = 0;
         if (iss >> pos && pos.size() == 2) {
-            iss >> n; // n eh opcional
-            cout << "Comando 'lsolo' reconhecido para posicao " << pos;
-            if (n > 0) cout << " com raio " << n;
-            cout << ", nao implementado ainda.\n";
+            int l = tolower(pos[0]) - 'a';
+            int c = tolower(pos[1]) - 'a';
+
+            // Chama a função do Jardim
+            jardim->infoSolo(l, c);
+
         } else {
-            cout << "Uso: lsolo <lc> [n] (ex: lsolo df 2)\n";
+            cout << "Uso: lsolo <lc> (ex: lsolo aa)\n";
         }
     }
     else if (cmd == "lferr") {

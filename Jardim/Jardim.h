@@ -30,11 +30,11 @@ public:
     bool adicionarFerramenta(const std::string& tipo, int l, int c);
 
     void mostrar() const;
+    void infoSolo(int l, int c) const;
     Jardineiro& getJardineiro();
-
-
     int getLinhas() const;
     int getColunas() const;
+
 
 };
 
