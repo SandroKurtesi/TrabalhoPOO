@@ -35,6 +35,9 @@ public:
     int getLinhas() const;
     int getColunas() const;
 
+    bool colherPlanta(int l, int c);
+
+    void avancaInstante();
 
 };
 

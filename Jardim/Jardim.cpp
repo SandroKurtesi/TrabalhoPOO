@@ -211,3 +211,71 @@ void Jardim::infoSolo(int l, int c) const {
         }
     }
 }
+
+bool Jardim::colherPlanta(int l, int c) {
+
+    if (l < 0 || l >= linhas || c < 0 || c >= colunas) return false;
+
+    // 2. Validar Regras do Jardineiro (Limite de 5)
+    if (!jardineiro.podeColher()) {
+        cout << "O jardineiro esta cansado! (Max 5 colheitas por turno)\n";
+        return false;
+    }
+
+    // 3. Procurar a planta na lista
+    for (auto it = plantas.begin(); it != plantas.end(); ++it) {
+        Planta* p = *it;
+
+        if (p->getLinha() == l && p->getColuna() == c) {
+            // ENCONTROU!
+
+            // a) Apagar o objeto da memória (ESSENCIAL!)
+            delete p;
+
+            // b) Remover o ponteiro da lista
+            plantas.erase(it);
+
+            // c) Atualizar o contador do jardineiro
+            jardineiro.registarColheita();
+
+            return true; // Sucesso
+        }
+    }
+
+    cout << "Nao ha planta nessa posicao.\n";
+    return false;
+}
+
+void Jardim::avancaInstante() {
+    // 1. O Jardineiro descansa (Reset aos contadores de ações)
+    // Isto permite que ele volte a colher mais 5 plantas no próximo turno
+    jardineiro.resetTurno();
+
+    // 2. Atualizar as Plantas (Envelhecer, beber, morrer)
+    // Usamos um iterador para podermos remover plantas da lista enquanto percorremos
+    auto it = plantas.begin();
+    while (it != plantas.end()) {
+        Planta* p = *it;
+
+        // Descobre o solo onde a planta está
+        Solo& soloDaPlanta = grelha[p->getLinha()][p->getColuna()];
+
+        // Manda a planta viver o seu turno
+        p->atualizar(soloDaPlanta);
+
+        // Verifica se morreu
+        if (!p->estaViva()) {
+            cout << "A planta " << p->getRepresentacao()
+                 << " (" << p->getTipo() << ") morreu na posicao "
+                 << char('A' + p->getLinha()) << char('A' + p->getColuna()) << ".\n";
+
+            // Limpa a memória
+            delete p;
+            // Remove da lista e atualiza o iterador para o próximo
+            it = plantas.erase(it);
+        } else {
+            // Se está viva, avança para a próxima
+            ++it;
+        }
+    }
+}

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include "../Ferramentas/Ferramenta.h"
+#include "../Settings.h"
 
 class Jardineiro {
     int linha = -1, coluna = -1;
@@ -13,6 +14,8 @@ class Jardineiro {
 
     std::vector<Ferramenta*> inventario;
     Ferramenta* ferramentaNaMao = nullptr;
+
+    int colheitasNesteTurno = 0;
 public:
     Jardineiro() = default; // indica ao compilador para disponibilizar o construtor por omissão
 
@@ -35,12 +38,22 @@ public:
 
 
     bool pegarFerramenta(int id);
-
-
     void largarFerramenta();
 
-
     Ferramenta* getFerramentaNaMao() const { return ferramentaNaMao; }
+
+    bool podeColher() const {
+        return colheitasNesteTurno < Settings::Jardineiro::max_colheitas;
+    }
+    void registarColheita() {
+        colheitasNesteTurno++;
+    }
+
+    // Descansa (reset ao contador quando o tempo avança)
+    void resetTurno() {
+        colheitasNesteTurno = 0;
+    }
+
 };
 
 #endif //TP_JARDINEIRO_H

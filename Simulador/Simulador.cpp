@@ -106,19 +106,17 @@ void Simulador::processarComando(const string &linha) {
         jardim->mostrar();
     }
     else if (cmd == "avanca") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
         int n = 1;
-        if (iss >> n) {
-            if (n <= 0) {
-                cout << "Numero de instantes deve ser positivo.\n";
-                return;
-            }
+        if (iss >> n) { /* leu n */ }
+
+        cout << "Avancando " << n << " instante(s)...\n";
+
+        for (int i = 0; i < n; ++i) {
+            jardim->avancaInstante();
         }
-        cout << "Comando 'avanca' reconhecido, avancando " << n << " instante(s). Ainda nao implementado.\n";
+        jardim->mostrar();
     }
     else if (cmd == "lplantas") {
         if (!jardim) {
@@ -185,16 +183,22 @@ void Simulador::processarComando(const string &linha) {
         }
     }
     else if (cmd == "colhe") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
         string pos;
         if (iss >> pos && pos.size() == 2) {
-            cout << "Comando 'colhe' reconhecido para posicao " << pos << ", nao implementado ainda.\n";
+            int l = tolower(pos[0]) - 'a';
+            int c = tolower(pos[1]) - 'a';
+
+            // Chama a função do Jardim
+            if (jardim->colherPlanta(l, c)) {
+                cout << "Planta colhida com sucesso.\n";
+                jardim->mostrar();
+            }
+            // (A função colherPlanta já imprime mensagens de erro especificas,
+            // por isso não precisamos de muitos couts aqui)
         } else {
-            cout << "Uso: colhe <lc> (ex: colhe fb)\n";
+            cout << "Uso: colhe <lc> (ex: colhe aa)\n";
         }
     }
     else if (cmd == "planta") {
