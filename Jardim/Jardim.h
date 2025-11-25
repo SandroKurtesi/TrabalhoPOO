@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "../Plantas/Planta.h"
+#include "../Ferramentas/Ferramenta.h"
 
 class Jardim {
     int linhas;
@@ -17,6 +18,7 @@ class Jardim {
     Jardineiro jardineiro;
 
     std::vector<Planta*> plantas;
+    std::vector<Ferramenta*> ferramentas;
 
 public:
     Jardim(int l, int c);
@@ -24,9 +26,8 @@ public:
 
     static bool dimensoesValidas(int l, int c);
 
-
-
     bool adicionarPlanta(const std::string& tipo, int l, int c);
+    bool adicionarFerramenta(const std::string& tipo, int l, int c);
 
     void mostrar() const;
     Jardineiro& getJardineiro();

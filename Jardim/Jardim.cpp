@@ -1,12 +1,15 @@
 #include "Jardim.h"
 #include <iostream>
 
-// Tens de incluir os .h das plantas especificas para as conseguires criar
+
 #include "../Plantas/tipos/PlantaExotica/PlantaExotica.h"
 #include "../Plantas/tipos/ErvaDaninha/ErvaDaninha.h"
 #include "../Plantas/tipos/Cacto/Cacto.h"
 #include "../Plantas/tipos/Roseira/Roseira.h"
-
+#include "../Ferramentas/tipos/Adubo/Adubo.h"
+#include "../Ferramentas/tipos/Tesoura/Tesoura.h"
+#include "../Ferramentas/tipos/Regador/Regador.h"
+#include "../Ferramentas/tipos/FerramentaZ/FerramentaZ.h"
 using namespace std;
 
 // Construtor
@@ -28,6 +31,11 @@ Jardim::~Jardim() {
         delete p;
     }
     plantas.clear();
+
+    for (Ferramenta* f : ferramentas) {
+        delete f;
+    }
+    ferramentas.clear();
 }
 
 // Getters
@@ -79,45 +87,91 @@ bool Jardim::adicionarPlanta(const std::string& tipo, int l, int c) {
 }
 
 
-// --- FUNÇÃO ATUALIZADA: Mostrar ---
+bool Jardim::adicionarFerramenta(const std::string& tipo, int l, int c) {
+    if (l < 0 || l >= linhas || c < 0 || c >= colunas) return false;
+
+    // Criar a ferramenta certa
+    Ferramenta* nova = nullptr;
+
+    if (tipo == "regador" || tipo == "g") {
+        nova = new Regador(l, c);
+    }
+    else if (tipo == "adubo" || tipo == "a") {
+        nova = new Adubo(l, c);
+    }
+    else if (tipo == "tesoura" || tipo == "t") {
+        nova = new Tesoura(l, c);
+    }
+    else if (tipo == "z") {
+        nova = new FerramentaZ(l, c);
+    }
+
+    if (nova != nullptr) {
+        ferramentas.push_back(nova);
+        return true;
+    }
+    return false;
+}
+
+
+
 void Jardim::mostrar() const {
-    // Régua de cima
+    // 1. Imprimir a "Régua" de cima (A B C D ...)
     cout << "  ";
     for (int j = 0; j < colunas; ++j) {
-        cout << char('A' + j);
+        cout << char('A' + j); // Imprime as letras das colunas
     }
     cout << "\n";
 
+    // 2. Percorrer todas as linhas
     for (int i = 0; i < linhas; ++i) {
-        // Régua lateral
+
+        // Imprimir a "Régua" lateral (A B C D ...)
         cout << char('A' + i) << " ";
 
+        // Percorrer todas as colunas desta linha
         for (int j = 0; j < colunas; ++j) {
 
-            // 1. PRIORIDADE MÁXIMA: Jardineiro
-            if (jardineiro.estaDentro() && i == jardineiro.getLinha() && j == jardineiro.getColuna()) {
-                cout << jardineiro.getRepresentacao();
-            }
-            else {
-                // 2. PRIORIDADE MÉDIA: Plantas
-                bool desenhouPlanta = false;
+            bool desenhou = false; // Flag para saber se já desenhámos algo nesta casa
 
-                // Procura na lista se há alguma planta nesta posição (i, j)
+            // --- PRIORIDADE 1: O JARDINEIRO ---
+            // Verifica se o jardineiro está no jardim e se está nesta posição (i, j)
+            if (jardineiro.estaDentro() && i == jardineiro.getLinha() && j == jardineiro.getColuna()) {
+                cout << jardineiro.getRepresentacao(); // Desenha '*'
+                desenhou = true;
+            }
+
+            // --- PRIORIDADE 2: AS PLANTAS ---
+            // Só verifica plantas se ainda não desenhou o jardineiro
+            if (!desenhou) {
                 for (Planta* p : plantas) {
                     if (p->getLinha() == i && p->getColuna() == j) {
                         cout << p->getRepresentacao(); // Desenha 'r', 'c', etc.
-                        desenhouPlanta = true;
-                        break; // Encontrou, pára de procurar e avança
+                        desenhou = true;
+                        break; // Já encontrou uma planta, pára de procurar e sai do loop das plantas
                     }
                 }
+            }
 
-                // 3. PRIORIDADE MÍNIMA: Solo
-                // Só desenha o solo se não desenhou planta nem jardineiro
-                if (!desenhouPlanta) {
-                    cout << grelha[i][j].getRepresentacao();
+            // --- PRIORIDADE 3: AS FERRAMENTAS ---
+            // Só verifica ferramentas se não desenhou jardineiro nem planta
+            if (!desenhou) {
+                for (Ferramenta* f : ferramentas) {
+                    if (f->getLinha() == i && f->getColuna() == j) {
+                        cout << f->getRepresentacao(); // Desenha 'g', 'a', 't', 'z'
+                        desenhou = true;
+                        break; // Já encontrou uma ferramenta, pára de procurar
+                    }
                 }
             }
+
+            // --- PRIORIDADE 4: O SOLO ---
+            // Se não havia nada, desenha o solo (que é " " ou outro caracter)
+            if (!desenhou) {
+                cout << grelha[i][j].getRepresentacao();
+            }
         }
+        // Fim da linha, muda para a próxima
         cout << "\n";
     }
 }
