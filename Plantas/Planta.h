@@ -3,6 +3,7 @@
 #ifndef TP_PLANTA_H
 #define TP_PLANTA_H
 #include <string>
+#include <sstream>
 
 class Solo;
 
@@ -44,6 +45,16 @@ public:
             case Beleza::BONITA: return "Bonita";
                 default:         return "Neutra";
         }
+    }
+
+    virtual std::string getDescricao() const {
+        std::ostringstream oss;
+        oss << getTipo() << " (" << getRepresentacao() << ") "
+            << "| Pos: " << (char)('A' + linha) << (char)('A' + coluna)
+            << " | Agua: " << agua
+            << " | Nutr: " << nutrientes
+            << " | Saude: " << (viva ? "Viva" : "Morta");
+        return oss.str();
     }
 
 

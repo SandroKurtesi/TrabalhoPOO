@@ -118,32 +118,33 @@ void Simulador::processarComando(const string &linha) {
         }
         jardim->mostrar();
     }
+
     else if (cmd == "lplantas") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
-        cout << "Comando 'lplantas' reconhecido, nao implementado ainda.\n";
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
+
+        jardim->listarTodasPlantas();
     }
+
+
     else if (cmd == "lplanta") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
         string pos;
         if (iss >> pos && pos.size() == 2) {
-            cout << "Comando 'lplanta' reconhecido para posicao " << pos << ", nao implementado ainda.\n";
+            int l = tolower(pos[0]) - 'a';
+            int c = tolower(pos[1]) - 'a';
+
+            jardim->listarPlanta(l, c);
         } else {
-            cout << "Uso: lplanta <lc> (ex: lplanta ej)\n";
+            cout << "Uso: lplanta <lc>\n";
         }
     }
+
+
     else if (cmd == "larea") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
-        cout << "Comando 'larea' reconhecido, nao implementado ainda.\n";
+        if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
+
+        jardim->listarArea();
     }
     else if (cmd == "lsolo") {
         if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
@@ -153,7 +154,7 @@ void Simulador::processarComando(const string &linha) {
             int l = tolower(pos[0]) - 'a';
             int c = tolower(pos[1]) - 'a';
 
-            // Chama a função do Jardim
+
             jardim->infoSolo(l, c);
 
         } else {

@@ -279,3 +279,79 @@ void Jardim::avancaInstante() {
         }
     }
 }
+
+// 1. IMPLEMENTAÇÃO DE lplantas
+void Jardim::listarTodasPlantas() const {
+    cout << "=== LISTA DE PLANTAS DO JARDIM ===\n";
+    if (plantas.empty()) {
+        cout << "(Nenhuma planta no jardim)\n";
+        return;
+    }
+
+    for (const Planta* p : plantas) {
+        // Chama o getDescricao() que criaste no Passo 1
+        cout << " - " << p->getDescricao() << "\n";
+
+        // Mostra também o solo onde ela está (requisito do enunciado)
+        const Solo& s = grelha[p->getLinha()][p->getColuna()];
+        cout << "   [Solo] Agua: " << s.getAgua() << " Nutr: " << s.getNutrientes() << "\n";
+    }
+}
+
+// 2. IMPLEMENTAÇÃO DE lplanta <l><c>
+void Jardim::listarPlanta(int l, int c) const {
+    if (l < 0 || l >= linhas || c < 0 || c >= colunas) {
+        cout << "Coordenadas invalidas.\n";
+        return;
+    }
+
+    bool encontrou = false;
+    for (const Planta* p : plantas) {
+        if (p->getLinha() == l && p->getColuna() == c) {
+            cout << "--- DETALHE DA PLANTA ---\n";
+            cout << p->getDescricao() << "\n";
+            encontrou = true;
+            // Não fazemos break porque teoricamente (no futuro)
+            // podiam haver duas coisas, embora as regras agora não deixem.
+        }
+    }
+
+    if (!encontrou) {
+        cout << "Nao existe nenhuma planta na posicao "
+             << (char)('A' + l) << (char)('A' + c) << ".\n";
+    }
+}
+
+// 3. IMPLEMENTAÇÃO DE larea
+// Lista tudo o que NÃO é vazio
+void Jardim::listarArea() const {
+    cout << "=== LISTAGEM DA AREA NAO-VAZIA ===\n";
+
+    for (int i = 0; i < linhas; ++i) {
+        for (int j = 0; j < colunas; ++j) {
+            bool temAlgo = false;
+
+            // Verifica se tem Jardineiro
+            if (jardineiro.estaDentro() && jardineiro.getLinha() == i && jardineiro.getColuna() == j)
+                temAlgo = true;
+
+            // Verifica se tem Planta
+            if (!temAlgo) {
+                for (auto p : plantas)
+                    if (p->getLinha() == i && p->getColuna() == j) { temAlgo = true; break; }
+            }
+
+            // Verifica se tem Ferramenta
+            if (!temAlgo) {
+                for (auto f : ferramentas)
+                    if (f->getLinha() == i && f->getColuna() == j) { temAlgo = true; break; }
+            }
+
+            // Se tiver alguma coisa, reutilizamos o infoSolo() que já tinhas feito!
+            if (temAlgo) {
+                infoSolo(i, j); // <--- Reutilização inteligente de código
+                cout << "-----------------------------\n";
+            }
+        }
+    }
+}

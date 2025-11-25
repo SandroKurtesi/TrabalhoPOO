@@ -39,6 +39,10 @@ public:
 
     void avancaInstante();
 
+    void listarTodasPlantas() const;      // Para lplantas
+    void listarPlanta(int l, int c) const; // Para lplanta
+    void listarArea() const;
+
 };
 
 #endif //TP_JARDIM_H
