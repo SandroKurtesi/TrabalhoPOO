@@ -43,10 +43,9 @@ void Roseira::atualizar(Solo &solo) {
     // Morre se: agua == 0, nutr == 0, ou nutr > 199
     if (this->agua <= Settings::Roseira::morre_agua_menor ||
         this->nutrientes <= Settings::Roseira::morre_nutrientes_menor ||
-        this->nutrientes >= 200) // Valor fixo ou usa Settings se tiveres criado constante
+        this->nutrientes >= 200)
     {
         this->viva = false;
-
         // Regra: "Ao morrer deixa no solo metade dos nutrientes... e metade da água"
         solo.setNutrientes(solo.getNutrientes() + (this->nutrientes / 2));
         solo.setAgua(solo.getAgua() + (this->agua / 2));

@@ -339,7 +339,6 @@ void Simulador::processarComando(const string &linha) {
                 cout << "A executar comandos do ficheiro '" << nomeFicheiro << "'...\n";
                 string linhaFicheiro;
 
-
                 while (getline(ficheiro, linhaFicheiro)) {
 
                     if (linhaFicheiro.empty() || linhaFicheiro[0] == '#') continue;
