@@ -15,6 +15,9 @@ public:
 
     void atualizar(Solo& solo) override;
     bool podemMultiplicar(const Solo &solo) const override;
+    void posReproducao() override {
+        ultimoMultiplicar = 0; // Reset ao contador!
+    }
 
     char getRepresentacao() const override { return 'e'; }
     std::string getTipo() const override { return "ErvaDaninha"; }

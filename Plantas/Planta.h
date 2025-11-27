@@ -29,6 +29,9 @@ public:
     virtual bool podemMultiplicar(const Solo& solo) const = 0;
     virtual char getRepresentacao() const = 0;
     virtual std::string getTipo() const = 0;
+    // Método que o Jardim chama quando a reprodução tem sucesso
+    virtual void posReproducao() {} // Por defeito não faz nada
+
 
     // getters
     bool estaViva() const { return viva; }
@@ -57,6 +60,8 @@ public:
         return oss.str();
     }
 
+    void setAgua(int a) { agua = a; }
+    void setNutrientes(int n) { nutrientes = n; }
 
 };
 

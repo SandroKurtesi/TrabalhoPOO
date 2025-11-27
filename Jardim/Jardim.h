@@ -20,6 +20,8 @@ class Jardim {
     std::vector<Planta*> plantas;
     std::vector<Ferramenta*> ferramentas;
 
+    bool getVizinhaLivre(int l, int c, int& resL, int& resC);
+
 public:
     Jardim(int l, int c);
     ~Jardim();
@@ -34,6 +36,7 @@ public:
     Jardineiro& getJardineiro();
     int getLinhas() const;
     int getColunas() const;
+    Solo& getSolo(int l, int c) const;
 
     bool colherPlanta(int l, int c);
 
@@ -42,6 +45,8 @@ public:
     void listarTodasPlantas() const;      // Para lplantas
     void listarPlanta(int l, int c) const; // Para lplanta
     void listarArea() const;
+
+
 
 };
 

@@ -246,37 +246,127 @@ bool Jardim::colherPlanta(int l, int c) {
     return false;
 }
 
+// Função auxiliar para aceder ao Solo de forma segura
+Solo& Jardim::getSolo(int l, int c) const {
+    // Se as coordenadas forem inválidas, devolve o solo da posição 0,0
+    // (apenas para evitar que o programa vá abaixo)
+    if (l < 0 || l >= linhas || c < 0 || c >= colunas) {
+        return grelha[0][0];
+    }
+    // Retorna o solo na posição pedida
+    return grelha[l][c];
+}
+
+
 void Jardim::avancaInstante() {
-    // 1. O Jardineiro descansa (Reset aos contadores de ações)
-    // Isto permite que ele volte a colher mais 5 plantas no próximo turno
+    // 1. O Jardineiro descansa (Reset aos contadores)
     jardineiro.resetTurno();
 
-    // 2. Atualizar as Plantas (Envelhecer, beber, morrer)
-    // Usamos um iterador para podermos remover plantas da lista enquanto percorremos
+    // --- VERIFICA SE TENS ESTE BLOCO EXATO ---
+    if (jardineiro.estaDentro()) {
+        Ferramenta* f = jardineiro.getFerramentaNaMao();
+
+        // Se tem ferramenta, USA-A!
+        if (f != nullptr) {
+            // Importante: getSolo ou grelha[...][...]
+            f->usar(grelha[jardineiro.getLinha()][jardineiro.getColuna()]);
+        }
+    }
+
+    // Lista temporária para guardar os bebés que nascerem neste turno
+    vector<Planta*> novasPlantas;
+
+    // 3. CICLO DE VIDA DAS PLANTAS
     auto it = plantas.begin();
     while (it != plantas.end()) {
-        Planta* p = *it;
+        Planta* mae = *it;
 
-        // Descobre o solo onde a planta está
-        Solo& soloDaPlanta = grelha[p->getLinha()][p->getColuna()];
+        // Obtém o solo onde a planta está
+        Solo& soloMae = grelha[mae->getLinha()][mae->getColuna()];
 
-        // Manda a planta viver o seu turno
-        p->atualizar(soloDaPlanta);
+        // A. Atualizar (Beber, Comer, Envelhecer)
+        mae->atualizar(soloMae);
 
-        // Verifica se morreu
-        if (!p->estaViva()) {
-            cout << "A planta " << p->getRepresentacao()
-                 << " (" << p->getTipo() << ") morreu na posicao "
-                 << char('A' + p->getLinha()) << char('A' + p->getColuna()) << ".\n";
+        // B. Verificar Morte
+        if (!mae->estaViva()) {
+            cout << "Planta " << mae->getRepresentacao() << " morreu na posicao "
+                 << (char)('A' + mae->getLinha()) << (char)('A' + mae->getColuna()) << ".\n";
 
-            // Limpa a memória
-            delete p;
-            // Remove da lista e atualiza o iterador para o próximo
-            it = plantas.erase(it);
-        } else {
-            // Se está viva, avança para a próxima
-            ++it;
+            delete mae;             // Limpa memória
+            it = plantas.erase(it); // Remove da lista e atualiza o iterador
+            continue;               // Passa logo para a próxima
         }
+
+        // C. Verificar Reprodução
+        if (mae->podemMultiplicar(soloMae)) {
+
+            // --- CORREÇÃO: Declarar as variáveis ANTES de usar ---
+            int filhoL = -1;
+            int filhoC = -1;
+
+            // Agora passamos as variáveis para serem preenchidas
+            if (getVizinhaLivre(mae->getLinha(), mae->getColuna(), filhoL, filhoC)) {
+
+                Planta* bebe = nullptr;
+                string tipo = mae->getTipo();
+
+                // --- CRIAÇÃO DOS BEBÉS E REGRAS DE PARTILHA ---
+
+                if (tipo == "Roseira") {
+                    bebe = new Roseira(filhoL, filhoC);
+                    // Regra Roseira: "Original fica com 100 nutr e metade da agua"
+                    // "Bebé começa com 25 nutr e metade da agua da mãe"
+                    int aguaTotal = mae->getAgua();
+
+                    mae->setNutrientes(100);
+                    mae->setAgua(aguaTotal / 2);
+
+                    bebe->setNutrientes(25);
+                    bebe->setAgua(aguaTotal / 2);
+                }
+                else if (tipo == "Cacto") {
+                    bebe = new Cacto(filhoL, filhoC);
+                    // Regra Cacto: "Agua e nutrientes divididos em iguais partes"
+                    int aguaMae = mae->getAgua();
+                    int nutrMae = mae->getNutrientes();
+
+                    mae->setAgua(aguaMae / 2);
+                    mae->setNutrientes(nutrMae / 2);
+
+                    bebe->setAgua(aguaMae / 2);
+                    bebe->setNutrientes(nutrMae / 2);
+                }
+                else if (tipo == "ErvaDaninha") {
+                    bebe = new ErvaDaninha(filhoL, filhoC);
+                    // Regra Erva: "Nova fica com 5/5, a inicial não perde nada"
+                    // (O construtor já mete 5/5, não precisamos de fazer nada)
+                }
+                else if (tipo == "PlantaExotica") {
+                    bebe = new PlantaExotica(filhoL, filhoC);
+                    // Regra Exótica (Clonagem)
+                    bebe->setAgua(mae->getAgua());
+                    bebe->setNutrientes(mae->getNutrientes());
+                }
+
+                // Se o bebé foi criado, adiciona à lista temporária
+                // ... (dentro do if (bebe != nullptr)) ...
+                if (bebe != nullptr) {
+                    novasPlantas.push_back(bebe);
+                    cout << "Nova " << tipo << " nasceu em "
+                         << (char)('A' + filhoL) << (char)('A' + filhoC) << "!\n";
+
+                    // --- CORREÇÃO AQUI: AVISAR A MÃE ---
+                    mae->posReproducao();
+                }
+            }
+        }
+
+        ++it; // Avança para a próxima planta mãe
+    }
+
+    // 4. Adicionar os bebés à lista oficial do Jardim
+    for (Planta* p : novasPlantas) {
+        plantas.push_back(p);
     }
 }
 
@@ -354,4 +444,43 @@ void Jardim::listarArea() const {
             }
         }
     }
+}
+
+// Helper para encontrar uma posição livre à volta de (l, c)
+// Retorna true se encontrou e preenche as variaveis 'resL' e 'resC'
+bool Jardim::getVizinhaLivre(int l, int c, int& resL, int& resC) {
+    // Vetores de deslocamento (Cima, Baixo, Esquerda, Direita)
+    int dL[] = {-1, 1, 0, 0};
+    int dC[] = {0, 0, -1, 1};
+
+    // Começar num índice aleatório para as plantas não crescerem sempre para Cima
+    int start = rand() % 4;
+
+    for (int i = 0; i < 4; i++) {
+        int idx = (start + i) % 4; // Garante que damos a volta ao array (0,1,2,3)
+
+        int vizL = l + dL[idx];
+        int vizC = c + dC[idx];
+
+        // 1. Validar Limites do Jardim
+        if (vizL >= 0 && vizL < linhas && vizC >= 0 && vizC < colunas) {
+
+            // 2. Verificar se está ocupado por outra planta
+            bool ocupado = false;
+            for (Planta* p : plantas) {
+                if (p->getLinha() == vizL && p->getColuna() == vizC) {
+                    ocupado = true;
+                    break;
+                }
+            }
+
+            // Se não estiver ocupado, encontrámos!
+            if (!ocupado) {
+                resL = vizL;
+                resC = vizC;
+                return true;
+            }
+        }
+    }
+    return false; // Não há espaço à volta
 }
