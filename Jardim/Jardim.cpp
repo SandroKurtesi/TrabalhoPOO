@@ -517,3 +517,51 @@ void Jardim::removerPlanta(int l, int c) {
     }
     cout << "Nenhuma planta para cortar aqui.\n";
 }
+
+#include <fstream> // Precisas disto no topo
+
+bool Jardim::salvarEstado(const string& nomeFicheiro) const {
+    ofstream f(nomeFicheiro); // Abre ficheiro para escrita
+    if (!f.is_open()) return false;
+
+    // 1. DADOS GERAIS
+    f << "JARDIM " << linhas << " " << colunas << "\n";
+
+    // 2. JARDINEIRO (Posição e Inventário)
+    // Formato: JARDINEIRO <linha> <coluna> <num_ferramentas>
+    // Se estiver fora, guardamos -1 -1
+    if (jardineiro.estaDentro())
+        f << "JARDINEIRO " << jardineiro.getLinha() << " " << jardineiro.getColuna();
+    else
+        f << "JARDINEIRO -1 -1";
+
+    // Guardar ferramentas da mochila
+    vector<Ferramenta*> inventario = jardineiro.getInventario();
+    f << " " << inventario.size() << "\n";
+    for (Ferramenta* ferr : inventario) {
+        // Formato: MOCHILA <tipo> <id>
+        f << "MOCHILA " << ferr->getTipo() << " " << ferr->getId() << "\n";
+    }
+
+    // 3. PLANTAS
+    // Formato: PLANTA <tipo> <linha> <coluna> <agua> <nutrientes> <idade>
+    f << "NUM_PLANTAS " << plantas.size() << "\n";
+    for (Planta* p : plantas) {
+        f << "PLANTA " << p->getTipo() << " "
+          << p->getLinha() << " " << p->getColuna() << " "
+          << p->getAgua() << " " << p->getNutrientes() << " "
+          << 0 << "\n";
+        // (Se nao tiveres getIdade(), cria o getter ou guarda 0)
+    }
+
+    // 4. FERRAMENTAS NO CHÃO
+    f << "NUM_FERRAMENTAS " << ferramentas.size() << "\n";
+    for (Ferramenta* ferr : ferramentas) {
+        f << "FERRAMENTA " << ferr->getTipo() << " "
+          << ferr->getLinha() << " " << ferr->getColuna() << " "
+          << ferr->getId() << "\n";
+    }
+
+    f.close();
+    return true;
+}

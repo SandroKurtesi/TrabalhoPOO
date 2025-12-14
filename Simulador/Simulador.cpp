@@ -292,16 +292,18 @@ void Simulador::processarComando(const string &linha) {
         }
     }
     else if (cmd == "grava") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
+        if (!jardim) { cout << "Nao ha jardim para gravar.\n"; return; }
 
-        string nome;
-        if (iss >> nome) {
-            cout << "Comando 'grava' reconhecido para nome '" << nome << "', nao implementado ainda.\n";
+        string nomeFicheiro;
+        iss >> nomeFicheiro;
+        if (nomeFicheiro.empty()) {
+            cout << "Erro: Indique o nome do ficheiro (ex: grava jogo.txt)\n";
         } else {
-            cout << "Uso: grava <nome>\n";
+            if (jardim->salvarEstado(nomeFicheiro)) {
+                cout << "Jogo gravado com sucesso em '" << nomeFicheiro << "'.\n";
+            } else {
+                cout << "Erro ao gravar o ficheiro.\n";
+            }
         }
     }
     else if (cmd == "recupera") {

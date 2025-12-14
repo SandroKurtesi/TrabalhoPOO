@@ -60,6 +60,8 @@ public:
         return oss.str();
     }
 
+
+
     void setAgua(int a) { agua = a; }
     void setNutrientes(int n) { nutrientes = n; }
 
