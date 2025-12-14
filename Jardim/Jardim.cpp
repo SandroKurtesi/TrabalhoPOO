@@ -550,8 +550,7 @@ bool Jardim::salvarEstado(const string& nomeFicheiro) const {
         f << "PLANTA " << p->getTipo() << " "
           << p->getLinha() << " " << p->getColuna() << " "
           << p->getAgua() << " " << p->getNutrientes() << " "
-          << 0 << "\n";
-        // (Se nao tiveres getIdade(), cria o getter ou guarda 0)
+          << p->getIdade() << "\n";
     }
 
     // 4. FERRAMENTAS NO CHÃO

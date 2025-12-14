@@ -19,6 +19,8 @@ protected:
     bool viva = true;
     Beleza beleza;
 
+    int idade;
+
 public:
     Planta(int l,int c,int a = 0, int n = 0, Beleza b = Beleza::NEUTRA)
         : linha(l),coluna(c), agua(a), nutrientes(n), beleza(b) {}
@@ -60,6 +62,11 @@ public:
         return oss.str();
     }
 
+
+    int getIdade() const { return idade; }
+
+
+    void setIdade(int i) { idade = i; }
 
 
     void setAgua(int a) { agua = a; }
