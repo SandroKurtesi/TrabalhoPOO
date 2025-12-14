@@ -273,9 +273,26 @@ void Jardim::avancaInstante() {
         }
     }
 
+
+
     // Lista temporária para guardar os bebés que nascerem neste turno
     vector<Planta*> novasPlantas;
 
+
+    if (jardineiro.estaDentro()) {
+        Ferramenta* f = jardineiro.getFerramentaNaMao();
+
+        if (f != nullptr) {
+            // Verifica se é uma Tesoura (pelo tipo ou cast)
+            if (f->getTipo() == "Tesoura") { // Ou verifica o ID se preferires
+                removerPlanta(jardineiro.getLinha(), jardineiro.getColuna());
+            }
+            else {
+                // Se for Adubo ou Regador, usa normalmente no solo
+                f->usar(grelha[jardineiro.getLinha()][jardineiro.getColuna()]);
+            }
+        }
+    }
     // 3. CICLO DE VIDA DAS PLANTAS
     auto it = plantas.begin();
     while (it != plantas.end()) {
@@ -483,4 +500,20 @@ bool Jardim::getVizinhaLivre(int l, int c, int& resL, int& resC) {
         }
     }
     return false; // Não há espaço à volta
+}
+
+void Jardim::removerPlanta(int l, int c) {
+    auto it = plantas.begin();
+    while (it != plantas.end()) {
+        Planta* p = *it;
+        if (p->getLinha() == l && p->getColuna() == c) {
+            cout << "A Tesoura cortou a planta " << p->getTipo() << " em " << l << "," << c << "!\n";
+            delete p;            // Liberta a memória
+            it = plantas.erase(it); // Remove do vetor
+            return; // Já cortou, pode sair
+        } else {
+            ++it;
+        }
+    }
+    cout << "Nenhuma planta para cortar aqui.\n";
 }

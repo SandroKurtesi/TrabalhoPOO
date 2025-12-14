@@ -42,6 +42,8 @@ public:
 
     void avancaInstante();
 
+    void removerPlanta(int l, int c);
+
     void listarTodasPlantas() const;      // Para lplantas
     void listarPlanta(int l, int c) const; // Para lplanta
     void listarArea() const;
