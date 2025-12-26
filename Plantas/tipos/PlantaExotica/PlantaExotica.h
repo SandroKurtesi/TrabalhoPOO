@@ -1,24 +1,23 @@
+#ifndef PLANTAEXOTICA_H
+#define PLANTAEXOTICA_H
 
-
-#ifndef TP_PLANTAEXOTICA_H
-#define TP_PLANTAEXOTICA_H
 #include "../../Planta.h"
-#include "../../../Settings.h"
-
+#include <string>
 
 class PlantaExotica : public Planta {
-
 public:
-    PlantaExotica(int l, int c)
-            : Planta(l, c, 10, 10, Beleza::BONITA)
-    {}
+    // Construtor
+    PlantaExotica(int l, int c);
 
+    // --- MÉTODOS OBRIGATÓRIOS (OVERRIDES) ---
+
+    char getRepresentacao() const override { return 'P'; }
+
+    // Os outros métodos que já tinhas:
+    Planta* duplica(int l, int c) const ;
     void atualizar(Solo& solo) override;
-    bool podemMultiplicar(const Solo &solo) const override;
-
-    char getRepresentacao() const override { return 'x'; }
+    bool podemMultiplicar(const Solo& solo) const override;
     std::string getTipo() const override { return "PlantaExotica"; }
 };
 
-
-#endif //TP_PLANTAEXOTICA_H
+#endif // PLANTAEXOTICA_H

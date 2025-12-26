@@ -10,6 +10,7 @@
 #include "../Ferramentas/tipos/Tesoura/Tesoura.h"
 #include "../Ferramentas/tipos/Regador/Regador.h"
 #include "../Ferramentas/tipos/FerramentaZ/FerramentaZ.h"
+#include "../Plantas/tipos/PlantaExotica/PlantaExotica.h"
 using namespace std;
 
 // Construtor
@@ -360,9 +361,15 @@ void Jardim::avancaInstante() {
                 }
                 else if (tipo == "PlantaExotica") {
                     bebe = new PlantaExotica(filhoL, filhoC);
-                    // Regra Exótica (Clonagem)
+
+                    // Regra: O filho nasce com metade dos nutrientes da mãe
+                    int metadeNutr = mae->getNutrientes() / 2;
+
+                    bebe->setNutrientes(metadeNutr);
+                    mae->setNutrientes(metadeNutr); // A mãe perde metade
+
+                    // Água mantém-se igual (ela não gasta muita água)
                     bebe->setAgua(mae->getAgua());
-                    bebe->setNutrientes(mae->getNutrientes());
                 }
 
                 // Se o bebé foi criado, adiciona à lista temporária
