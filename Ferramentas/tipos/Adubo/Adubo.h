@@ -1,9 +1,10 @@
 #ifndef TP_ADUBO_H
 #define TP_ADUBO_H
 #include "../../Ferramenta.h"
+#include "../../../Settings.h"
 
 class Adubo : public Ferramenta {
-    int quantidade = 100;
+    int quantidade = Settings::Adubo::capacidade;
 
 public:
     // Construtor recebe coordenadas
