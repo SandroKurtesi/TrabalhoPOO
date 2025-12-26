@@ -1,15 +1,22 @@
-#ifndef TP_FERRAMENTAZ_H
-#define TP_FERRAMENTAZ_H
+#ifndef FERRAMENTAZ_H
+#define FERRAMENTAZ_H
+
 #include "../../Ferramenta.h"
+#include <string>
 
 class FerramentaZ : public Ferramenta {
 public:
-    // Construtor recebe coordenadas
-    FerramentaZ(int l = -1, int c = -1);
+    FerramentaZ(int l=-1, int c=-1);
 
-    void usar(Solo& solo) override;
+    // A Ação Principal
+    void usar(Solo &solo) override;
+
+    // --- O QUE FALTAVA ---
+    // Define o simbolo que aparece no mapa quando a ferramenta esta no chao
+    char getRepresentacao() const override { return 'Z'; }
+
+    // Identificador
     std::string getTipo() const override { return "FerramentaZ"; }
-    char getRepresentacao() const override { return 'z'; }
 };
 
-#endif //TP_FERRAMENTAZ_H
+#endif // FERRAMENTAZ_H
