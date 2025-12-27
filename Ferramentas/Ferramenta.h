@@ -27,6 +27,7 @@ public:
 
     // Setters (importante para quando apanhas/largas)
     void setPosicao(int l, int c) { linha = l; coluna = c; }
+    void setId(int i) { id = i; }
 
     bool estaAtiva() const { return ativa; }
     void setAtiva(bool estado) { ativa = estado; }

@@ -54,6 +54,14 @@ public:
         colheitasNesteTurno = 0;
     }
 
+    void limparMochila() {
+        for (Ferramenta* f : inventario) {
+            delete f;
+        }
+        inventario.clear();
+        ferramentaNaMao = nullptr;
+    }
+
 };
 
 #endif //TP_JARDINEIRO_H

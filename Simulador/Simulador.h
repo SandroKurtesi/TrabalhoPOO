@@ -5,10 +5,14 @@
 
 #include "../Jardim/Jardim.h"
 #include <string>
+#include <map>
 
 class Simulador {
     Jardim* jardim = nullptr;
     bool ativo = true;
+    std::map<std::string, std::string> copias;
+
+
 
 public:
     ~Simulador();

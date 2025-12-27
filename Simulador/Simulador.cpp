@@ -297,31 +297,54 @@ void Simulador::processarComando(const string &linha) {
         }
     }
     else if (cmd == "grava") {
-        if (!jardim) { cout << "Nao ha jardim para gravar.\n"; return; }
-
-        string nomeFicheiro;
-        iss >> nomeFicheiro;
-        if (nomeFicheiro.empty()) {
-            cout << "Erro: Indique o nome do ficheiro (ex: grava jogo.txt)\n";
-        } else {
-            if (jardim->salvarEstado(nomeFicheiro)) {
-                cout << "Jogo gravado com sucesso em '" << nomeFicheiro << "'.\n";
-            } else {
-                cout << "Erro ao gravar o ficheiro.\n";
-            }
-        }
-    }
-    else if (cmd == "recupera") {
         if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
+            cout << "Nao ha jardim para gravar.\n";
             return;
         }
 
         string nome;
-        if (iss >> nome) {
-            cout << "Comando 'recupera' reconhecido para nome '" << nome << "', nao implementado ainda.\n";
+        iss >> nome; // Lê o nome da gravação (ex: "teste")
+
+        if (nome.empty()) {
+            cout << "Erro: Indique o nome da gravacao (ex: grava teste)\n";
         } else {
-            cout << "Uso: recupera <nome>\n";
+            // Guarda o estado atual na memória (mapa)
+            copias[nome] = jardim->getEstadoComoString();
+            cout << "Jardim gravado em memoria com o nome '" << nome << "'.\n";
+        }
+    }
+    else if (cmd == "recupera") {
+        string nome;
+        iss >> nome;
+
+        if (nome.empty()) {
+            cout << "Erro: Indique o nome da gravacao (ex: recupera checkpoint)\n";
+        } else {
+            // Verifica se a gravação existe no mapa
+            if (copias.find(nome) != copias.end()) {
+
+                // Se o jardim ainda não existir (caso tenhas reiniciado), cria um novo
+                if (!jardim) {
+                    stringstream ss(copias[nome]);
+                    string t; int l, c;
+                    ss >> t >> l >> c; // Lê as dimensões da gravação
+                    jardim = new Jardim(l, c);
+                }
+
+                // Carrega o estado
+                if (jardim->carregarEstado(copias[nome])) {
+                    cout << "Jogo recuperado de '" << nome << "'.\n";
+
+                    // REQUISITO: "A cópia é eliminada."
+                    copias.erase(nome);
+
+                    jardim->mostrar();
+                } else {
+                    cout << "Erro ao carregar o estado.\n";
+                }
+            } else {
+                cout << "Erro: Gravacao '" << nome << "' nao encontrada em memoria.\n";
+            }
         }
     }
     else if (cmd == "apaga") {

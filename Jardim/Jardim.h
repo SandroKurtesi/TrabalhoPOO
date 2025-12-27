@@ -52,7 +52,8 @@ public:
     void listarPlanta(int l, int c) const; // Para lplanta
     void listarArea() const;
 
-    bool salvarEstado(const std::string& nomeFicheiro) const;
+    bool carregarEstado(const std::string& estado);
+    std::string getEstadoComoString() const;
 
 
 };

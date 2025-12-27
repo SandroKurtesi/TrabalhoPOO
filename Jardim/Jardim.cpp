@@ -1,5 +1,6 @@
 #include "Jardim.h"
 #include <iostream>
+#include <sstream>
 
 
 #include "../Plantas/tipos/PlantaExotica/PlantaExotica.h"
@@ -47,6 +48,52 @@ Jardineiro &Jardim::getJardineiro() { return jardineiro; }
 int Jardim::getLinhas() const { return linhas; }
 int Jardim::getColunas() const { return colunas; }
 bool Jardim::dimensoesValidas(int l, int c) { return l > 0 && l <= 26 && c > 0 && c <= 26; }
+
+std::string Jardim::getEstadoComoString() const {
+    std::stringstream ss;
+
+    // 1. DADOS GERAIS
+    ss << "JARDIM " << linhas << " " << colunas << "\n";
+
+    // 2. JARDINEIRO
+    if (jardineiro.estaDentro())
+        ss << "JARDINEIRO " << jardineiro.getLinha() << " " << jardineiro.getColuna();
+    else
+        ss << "JARDINEIRO -1 -1";
+
+    const auto& inventario = jardineiro.getInventario();
+    ss << " " << inventario.size() << "\n";
+    for (Ferramenta* f : inventario) {
+        ss << "MOCHILA " << f->getTipo() << " " << f->getId() << "\n";
+    }
+
+    // 3. PLANTAS
+    ss << "NUM_PLANTAS " << plantas.size() << "\n";
+    for (Planta* p : plantas) {
+        ss << "PLANTA " << p->getTipo() << " "
+           << p->getLinha() << " " << p->getColuna() << " "
+           << p->getAgua() << " " << p->getNutrientes() << " "
+           << p->getIdade() << "\n";
+    }
+
+    // 4. FERRAMENTAS NO CHÃO
+    ss << "NUM_FERRAMENTAS " << ferramentas.size() << "\n";
+    for (Ferramenta* f : ferramentas) {
+        ss << "FERRAMENTA " << f->getTipo() << " "
+           << f->getLinha() << " " << f->getColuna() << " "
+           << f->getId() << "\n";
+    }
+    ss << "DADOS_SOLO " << linhas * colunas << "\n";
+    for (int i = 0; i < linhas; i++) {
+        for (int j = 0; j < colunas; j++) {
+            ss << "SOLO " << i << " " << j << " "
+               << grelha[i][j].getAgua() << " "
+               << grelha[i][j].getNutrientes() << "\n";
+        }
+    }
+
+    return ss.str(); // Devolve tudo como um texto gigante
+}
 
 
 void Jardim::spawnFerramentaAleatoria() {
@@ -583,47 +630,111 @@ void Jardim::removerPlanta(int l, int c) {
 
 #include <fstream> // Precisas disto no topo
 
-bool Jardim::salvarEstado(const string& nomeFicheiro) const {
-    ofstream f(nomeFicheiro); // Abre ficheiro para escrita
-    if (!f.is_open()) return false;
+bool Jardim::carregarEstado(const string& estado) {
+    stringstream ss(estado);
+    string tag;
+    int linhasLidas, colunasLidas;
 
-    // 1. DADOS GERAIS
-    f << "JARDIM " << linhas << " " << colunas << "\n";
+    // 1. LER CABEÇALHO (JARDIM L C)
+    if (!(ss >> tag >> linhasLidas >> colunasLidas)) return false;
 
-    // 2. JARDINEIRO (Posição e Inventário)
-    // Formato: JARDINEIRO <linha> <coluna> <num_ferramentas>
-    // Se estiver fora, guardamos -1 -1
-    if (jardineiro.estaDentro())
-        f << "JARDINEIRO " << jardineiro.getLinha() << " " << jardineiro.getColuna();
-    else
-        f << "JARDINEIRO -1 -1";
+    // Se as dimensões mudaram, recriar a grelha
+    if (linhasLidas != linhas || colunasLidas != colunas) {
+        for (int i = 0; i < linhas; ++i) delete[] grelha[i];
+        delete[] grelha;
 
-    // Guardar ferramentas da mochila
-    vector<Ferramenta*> inventario = jardineiro.getInventario();
-    f << " " << inventario.size() << "\n";
-    for (Ferramenta* ferr : inventario) {
-        // Formato: MOCHILA <tipo> <id>
-        f << "MOCHILA " << ferr->getTipo() << " " << ferr->getId() << "\n";
+        linhas = linhasLidas;
+        colunas = colunasLidas;
+
+        grelha = new Solo*[linhas];
+        for (int i = 0; i < linhas; ++i) grelha[i] = new Solo[colunas];
     }
 
-    // 3. PLANTAS
-    // Formato: PLANTA <tipo> <linha> <coluna> <agua> <nutrientes> <idade>
-    f << "NUM_PLANTAS " << plantas.size() << "\n";
-    for (Planta* p : plantas) {
-        f << "PLANTA " << p->getTipo() << " "
-          << p->getLinha() << " " << p->getColuna() << " "
-          << p->getAgua() << " " << p->getNutrientes() << " "
-          << p->getIdade() << "\n";
+    // 2. LIMPEZA TOTAL (Apagar o que existe agora)
+    for (Planta* p : plantas) delete p;
+    plantas.clear();
+
+    for (Ferramenta* f : ferramentas) delete f;
+    ferramentas.clear();
+
+    jardineiro.limparMochila(); // (Confirma que criaste este método no Jardineiro.h!)
+
+    // 3. RECUPERAR JARDINEIRO
+    int jLin, jCol;
+    ss >> tag >> jLin >> jCol; // JARDINEIRO L C
+    if (jLin != -1) jardineiro.entra(jLin, jCol, linhas, colunas);
+    else jardineiro.sai();
+
+    int numItems;
+    ss >> numItems; // Quantas ferramentas na mochila?
+    for (int i = 0; i < numItems; i++) {
+        string tipo; int id;
+        ss >> tag >> tipo >> id; // MOCHILA <tipo> <id>
+
+        Ferramenta* nova = nullptr;
+        if (tipo == "Adubo") nova = new Adubo();
+        else if (tipo == "Regador") nova = new Regador();
+        else if (tipo == "Tesoura") nova = new Tesoura();
+        else if (tipo == "FerramentaZ") nova = new FerramentaZ();
+
+        if (nova) {
+            nova->setId(id); // (Confirma que tens o setId no Ferramenta.h!)
+            jardineiro.guardarFerramenta(nova);
+        }
     }
 
-    // 4. FERRAMENTAS NO CHÃO
-    f << "NUM_FERRAMENTAS " << ferramentas.size() << "\n";
-    for (Ferramenta* ferr : ferramentas) {
-        f << "FERRAMENTA " << ferr->getTipo() << " "
-          << ferr->getLinha() << " " << ferr->getColuna() << " "
-          << ferr->getId() << "\n";
+    // 4. RECUPERAR PLANTAS
+    int numPlantas;
+    ss >> tag >> numPlantas;
+    for (int i = 0; i < numPlantas; i++) {
+        string tipo;
+        int l, c, agua, nutr, idade;
+        ss >> tag >> tipo >> l >> c >> agua >> nutr >> idade;
+
+        Planta* p = nullptr;
+        if (tipo == "Roseira") p = new Roseira(l, c);
+        else if (tipo == "Cacto") p = new Cacto(l, c);
+        else if (tipo == "ErvaDaninha") p = new ErvaDaninha(l, c);
+        else if (tipo == "PlantaExotica") p = new PlantaExotica(l, c);
+
+        if (p) {
+            p->setAgua(agua);
+            p->setNutrientes(nutr);
+            p->setIdade(idade);
+            plantas.push_back(p);
+        }
     }
 
-    f.close();
+    // 5. RECUPERAR FERRAMENTAS NO CHÃO
+    int numFerr;
+    ss >> tag >> numFerr;
+    for (int i = 0; i < numFerr; i++) {
+        string tipo; int l, c, id;
+        ss >> tag >> tipo >> l >> c >> id;
+
+        Ferramenta* f = nullptr;
+        if (tipo == "Adubo") f = new Adubo(l, c);
+        else if (tipo == "Regador") f = new Regador(l, c);
+        else if (tipo == "Tesoura") f = new Tesoura(l, c);
+        else if (tipo == "FerramentaZ") f = new FerramentaZ(l, c);
+
+        if (f) {
+            f->setId(id);
+            ferramentas.push_back(f);
+        }
+    }
+
+    int numCelulas;
+    ss >> tag >> numCelulas; // Lê "DADOS_SOLO" e o número
+    for (int i = 0; i < numCelulas; i++) {
+        int l, c, agua, nutr;
+        ss >> tag >> l >> c >> agua >> nutr; // Lê "SOLO L C A N"
+
+        if (l >= 0 && l < linhas && c >= 0 && c < colunas) {
+            grelha[l][c].setAgua(agua);
+            grelha[l][c].setNutrientes(nutr);
+        }
+    }
+
     return true;
 }
