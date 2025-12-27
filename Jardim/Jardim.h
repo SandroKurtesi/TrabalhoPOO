@@ -22,11 +22,15 @@ class Jardim {
 
     bool getVizinhaLivre(int l, int c, int& resL, int& resC);
 
+    void spawnFerramentaAleatoria();
+
 public:
     Jardim(int l, int c);
     ~Jardim();
 
     static bool dimensoesValidas(int l, int c);
+
+    void verificarFerramentasNoChao();
 
     bool adicionarPlanta(const std::string& tipo, int l, int c);
     bool adicionarFerramenta(const std::string& tipo, int l, int c);

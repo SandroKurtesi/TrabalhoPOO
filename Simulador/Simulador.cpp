@@ -60,6 +60,7 @@ void Simulador::processarComando(const string &linha) {
             int c = pos[1] - 'a';
 
             jardim->getJardineiro().entra(l, c, jardim->getLinhas(), jardim->getColunas());
+            jardim->verificarFerramentasNoChao();
             jardim->mostrar();
         } else {
             cout << "Uso: entra <lc> (ex: entra ac)\n";
@@ -79,6 +80,7 @@ void Simulador::processarComando(const string &linha) {
             return;
         }
         jardim->getJardineiro().moverCima();
+        jardim->verificarFerramentasNoChao();
         jardim->mostrar();
     }
     else if (cmd == "b") {
@@ -87,6 +89,7 @@ void Simulador::processarComando(const string &linha) {
             return;
         }
         jardim->getJardineiro().moverBaixo(jardim->getLinhas());
+        jardim->verificarFerramentasNoChao();
         jardim->mostrar();
     }
     else if (cmd == "e") {
@@ -95,6 +98,7 @@ void Simulador::processarComando(const string &linha) {
             return;
         }
         jardim->getJardineiro().moverEsquerda();
+        jardim->verificarFerramentasNoChao();
         jardim->mostrar();
     }
     else if (cmd == "d") {
@@ -103,6 +107,7 @@ void Simulador::processarComando(const string &linha) {
             return;
         }
         jardim->getJardineiro().moverDireita(jardim->getColunas());
+        jardim->verificarFerramentasNoChao();
         jardim->mostrar();
     }
     else if (cmd == "avanca") {

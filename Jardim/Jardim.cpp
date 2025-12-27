@@ -18,6 +18,9 @@ Jardim::Jardim(int l, int c) : linhas(l), colunas(c) {
     grelha = new Solo*[linhas];
     for (int i = 0; i < linhas; ++i)
         grelha[i] = new Solo[colunas];
+    for (int i = 0; i < 3; i++) {
+        spawnFerramentaAleatoria();
+    }
 }
 
 // Destrutor (Atualizado para limpar as plantas também)
@@ -44,6 +47,70 @@ Jardineiro &Jardim::getJardineiro() { return jardineiro; }
 int Jardim::getLinhas() const { return linhas; }
 int Jardim::getColunas() const { return colunas; }
 bool Jardim::dimensoesValidas(int l, int c) { return l > 0 && l <= 26 && c > 0 && c <= 26; }
+
+
+void Jardim::spawnFerramentaAleatoria() {
+    // Proteção: Se o jardim estiver cheio de ferramentas, não cria mais (evita loop infinito)
+    if (ferramentas.size() >= linhas * colunas) return;
+
+    int l, c;
+    bool ocupada;
+
+    // Loop: Gera coordenadas até encontrar uma posição SEM ferramentas
+    do {
+        l = rand() % linhas;
+        c = rand() % colunas;
+        ocupada = false;
+
+        // Verifica se já existe alguma ferramenta nesta posição (l, c)
+        for (Ferramenta* f : ferramentas) {
+            if (f->getLinha() == l && f->getColuna() == c) {
+                ocupada = true;
+                break;
+            }
+        }
+    } while (ocupada);
+
+    // Agora que temos (l,c) livres, criamos a ferramenta
+    int tipo = rand() % 4; // 0, 1, 2, 3
+    Ferramenta* nova = nullptr;
+
+    if (tipo == 0) nova = new Regador(l, c);
+    else if (tipo == 1) nova = new Adubo(l, c);
+    else if (tipo == 2) nova = new Tesoura(l, c);
+    else nova = new FerramentaZ(l, c);
+
+    if (nova != nullptr) {
+        ferramentas.push_back(nova);
+    }
+}
+
+void Jardim::verificarFerramentasNoChao() {
+    if (!jardineiro.estaDentro()) return;
+
+    auto it = ferramentas.begin();
+    while (it != ferramentas.end()) {
+        Ferramenta* f = *it;
+
+        // Se o jardineiro estiver na mesma posicao da ferramenta
+        if (f->getLinha() == jardineiro.getLinha() && f->getColuna() == jardineiro.getColuna()) {
+
+            cout << "Encontraste uma ferramenta: " << f->getTipo() << " (ID: " << f->getId() << ")!\n";
+
+            // 1. O Jardineiro guarda-a
+            jardineiro.guardarFerramenta(f);
+
+            // 2. Removemos do chão (lista do jardim)
+            it = ferramentas.erase(it);
+
+            // 3. Regra Magica: Aparece outra noutro sitio!
+            spawnFerramentaAleatoria();
+
+        } else {
+            ++it;
+        }
+    }
+}
 
 
 // --- FUNÇÃO NOVA: Adicionar Planta ---
@@ -262,17 +329,6 @@ Solo& Jardim::getSolo(int l, int c) const {
 void Jardim::avancaInstante() {
     // 1. O Jardineiro descansa (Reset aos contadores)
     jardineiro.resetTurno();
-
-    // --- VERIFICA SE TENS ESTE BLOCO EXATO ---
-    if (jardineiro.estaDentro()) {
-        Ferramenta* f = jardineiro.getFerramentaNaMao();
-
-        // Se tem ferramenta, USA-A!
-        if (f != nullptr) {
-            // Importante: getSolo ou grelha[...][...]
-            f->usar(grelha[jardineiro.getLinha()][jardineiro.getColuna()]);
-        }
-    }
 
 
 
