@@ -372,6 +372,30 @@ Solo& Jardim::getSolo(int l, int c) const {
     return grelha[l][c];
 }
 
+// Função auxiliar para contar vizinhos (cima, baixo, esq, dir)
+int Jardim::contarVizinhosOcupados(int l, int c) {
+    int contador = 0;
+    int dL[] = {-1, 1, 0, 0};
+    int dC[] = {0, 0, -1, 1};
+
+    for (int i = 0; i < 4; i++) {
+        int vL = l + dL[i];
+        int vC = c + dC[i];
+
+        // Verifica limites
+        if (vL >= 0 && vL < linhas && vC >= 0 && vC < colunas) {
+            // Verifica se tem planta
+            for (Planta* p : plantas) {
+                if (p->getLinha() == vL && p->getColuna() == vC) {
+                    contador++;
+                    break;
+                }
+            }
+        }
+    }
+    return contador;
+}
+
 
 void Jardim::avancaInstante() {
     // 1. O Jardineiro descansa (Reset aos contadores)
@@ -445,86 +469,120 @@ void Jardim::avancaInstante() {
         // A. Atualizar (Beber, Comer, Envelhecer)
         mae->atualizar(soloMae);
 
-        // B. Verificar Morte
-        if (!mae->estaViva()) {
-            cout << "Planta " << mae->getRepresentacao() << " morreu na posicao "
-                 << (char)('A' + mae->getLinha()) << (char)('A' + mae->getColuna()) << ".\n";
+        bool morreuPorVizinhos = false;
+        if (mae->getTipo() == "Roseira") {
+            int vizinhos = contarVizinhosOcupados(mae->getLinha(), mae->getColuna());
 
-            delete mae;             // Limpa memória
-            it = plantas.erase(it); // Remove da lista e atualiza o iterador
-            continue;               // Passa logo para a próxima
+            // Calcula quantos vizinhos validos (dentro do mapa) existem
+            int maxVizinhosPossiveis = 0;
+            int dL[] = {-1, 1, 0, 0}; int dC[] = {0, 0, -1, 1};
+            for(int i=0; i<4; i++) {
+                int vvL = mae->getLinha() + dL[i]; int vvC = mae->getColuna() + dC[i];
+                if(vvL >= 0 && vvL < linhas && vvC >= 0 && vvC < colunas) maxVizinhosPossiveis++;
+            }
+
+            // Se estiver cercada por todos os lados possiveis
+            if (vizinhos == maxVizinhosPossiveis && maxVizinhosPossiveis > 0) {
+                morreuPorVizinhos = true;
+                cout << "A Roseira sufocou com os vizinhos!\n";
+                // Deixa metade dos recursos (Regra da Roseira)
+                soloMae.setNutrientes(soloMae.getNutrientes() + mae->getNutrientes()/2);
+                soloMae.setAgua(soloMae.getAgua() + mae->getAgua()/2);
+            }
+        }
+
+        // B. Verificar Morte
+        if (!mae->estaViva() || morreuPorVizinhos) {
+
+            if (!morreuPorVizinhos) { // Só imprime a mensagem normal se não foi sufoco
+                cout << "Planta " << mae->getRepresentacao() << " morreu na posicao "
+                     << (char)('A' + mae->getLinha()) << (char)('A' + mae->getColuna()) << ".\n";
+            }
+
+            delete mae;
+            it = plantas.erase(it);
+            continue;
         }
 
         // C. Verificar Reprodução
         if (mae->podemMultiplicar(soloMae)) {
 
-            // --- CORREÇÃO: Declarar as variáveis ANTES de usar ---
             int filhoL = -1;
             int filhoC = -1;
+            bool localEncontrado = false;
 
-            // Agora passamos as variáveis para serem preenchidas
-            if (getVizinhaLivre(mae->getLinha(), mae->getColuna(), filhoL, filhoC)) {
+            // --- 1. DECISÃO DO LOCAL (AQUI ESTÁ A LÓGICA NOVA) ---
 
+            // CASO A: ERVA DANINHA (INVADE E MATA)
+            if (mae->getTipo() == "ErvaDaninha") {
+                int start = rand() % 4;
+                int dL[] = {-1, 1, 0, 0};
+                int dC[] = {0, 0, -1, 1};
+
+                for(int i=0; i<4; i++) {
+                    int idx = (start + i) % 4;
+                    int tL = mae->getLinha() + dL[idx];
+                    int tC = mae->getColuna() + dC[idx];
+
+                    // Só verifica limites (ignora se está ocupado)
+                    if (tL >= 0 && tL < linhas && tC >= 0 && tC < colunas) {
+                        filhoL = tL;
+                        filhoC = tC;
+                        removerPlanta(filhoL, filhoC); // MATA QUEM LÁ ESTIVER!
+                        localEncontrado = true;
+                        break;
+                    }
+                }
+            }
+                // CASO B: OUTRAS PLANTAS (SÓ VAZIOS)
+            else {
+                if (getVizinhaLivre(mae->getLinha(), mae->getColuna(), filhoL, filhoC)) {
+                    localEncontrado = true;
+                }
+            }
+
+            // --- 2. CRIAÇÃO DO BEBÉ (SÓ SE ENCONTROU LOCAL) ---
+            if (localEncontrado) {
                 Planta* bebe = nullptr;
                 string tipo = mae->getTipo();
 
-                // --- CRIAÇÃO DOS BEBÉS E REGRAS DE PARTILHA ---
-
                 if (tipo == "Roseira") {
                     bebe = new Roseira(filhoL, filhoC);
-                    // Regra Roseira: "Original fica com 100 nutr e metade da agua"
-                    // "Bebé começa com 25 nutr e metade da agua da mãe"
                     int aguaTotal = mae->getAgua();
-
                     mae->setNutrientes(100);
                     mae->setAgua(aguaTotal / 2);
-
                     bebe->setNutrientes(25);
                     bebe->setAgua(aguaTotal / 2);
                 }
                 else if (tipo == "Cacto") {
                     bebe = new Cacto(filhoL, filhoC);
-                    // Regra Cacto: "Agua e nutrientes divididos em iguais partes"
                     int aguaMae = mae->getAgua();
                     int nutrMae = mae->getNutrientes();
-
                     mae->setAgua(aguaMae / 2);
                     mae->setNutrientes(nutrMae / 2);
-
                     bebe->setAgua(aguaMae / 2);
                     bebe->setNutrientes(nutrMae / 2);
                 }
                 else if (tipo == "ErvaDaninha") {
                     bebe = new ErvaDaninha(filhoL, filhoC);
-                    // Regra Erva: "Nova fica com 5/5, a inicial não perde nada"
-                    // (O construtor já mete 5/5, não precisamos de fazer nada)
                 }
                 else if (tipo == "PlantaExotica") {
                     bebe = new PlantaExotica(filhoL, filhoC);
-
-                    // Regra: O filho nasce com metade dos nutrientes da mãe
                     int metadeNutr = mae->getNutrientes() / 2;
-
                     bebe->setNutrientes(metadeNutr);
-                    mae->setNutrientes(metadeNutr); // A mãe perde metade
-
-                    // Água mantém-se igual (ela não gasta muita água)
+                    mae->setNutrientes(metadeNutr);
                     bebe->setAgua(mae->getAgua());
                 }
 
-                // Se o bebé foi criado, adiciona à lista temporária
-                // ... (dentro do if (bebe != nullptr)) ...
                 if (bebe != nullptr) {
                     novasPlantas.push_back(bebe);
-                    cout << "Nova " << tipo << " nasceu em "
+                    cout << "Nova " << tipo << " nasceu/invadiu em "
                          << (char)('A' + filhoL) << (char)('A' + filhoC) << "!\n";
-
-                    // --- CORREÇÃO AQUI: AVISAR A MÃE ---
                     mae->posReproducao();
                 }
             }
         }
-
+        // (Aqui fecha o if podemMultiplicar e logo a seguir vem o ++it)
         ++it; // Avança para a próxima planta mãe
     }
 

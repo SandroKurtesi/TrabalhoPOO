@@ -55,6 +55,8 @@ public:
     bool carregarEstado(const std::string& estado);
     std::string getEstadoComoString() const;
 
+    int contarVizinhosOcupados(int l, int c);
+
 
 };
 
