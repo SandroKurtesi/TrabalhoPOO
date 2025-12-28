@@ -419,26 +419,23 @@ void Jardim::avancaInstante() {
         if (f != nullptr) {
             // A. TESOURA (Só corta Ervas Daninhas)
             if (f->getTipo() == "Tesoura") {
-                // Como não tens getPlantaEm, procuramos manualmente no vetor
+                // Fazemos cast para Tesoura para aceder ao método novo
+                Tesoura* t = (Tesoura*) f;
+
+                bool cortou = false;
+
+                // Procurar planta na mesma posição
                 for (Planta* p : plantas) {
-                    // Verifica se a planta está na mesma posição do jardineiro
                     if (p->getLinha() == jardineiro.getLinha() &&
                         p->getColuna() == jardineiro.getColuna()) {
 
-                        // O GRANDE TESTE: É FEIA?
-                        if (p->getTipo() == "ErvaDaninha") {
-                            // Conversão para Letras
-                            char lin = 'A' + jardineiro.getLinha();
-                            char col = 'A' + jardineiro.getColuna();
-
-                            cout << "A Tesoura cortou a planta ErvaDaninha em "
-                                 << lin << col << "!\n";
-
-                            removerPlanta(jardineiro.getLinha(), jardineiro.getColuna());
-                        } else {
-                            // cout << "A tesoura nao corta plantas bonitas como " << p->getTipo() << "!\n";
+                        // --- AQUI ESTÁ A MAGIA OO ---
+                        // O Jardim pergunta à ferramenta se ela corta a planta
+                        if (t->tentarCortar(p)) {
+                            removerPlanta(p->getLinha(), p->getColuna());
+                            cortou = true;
                         }
-                        break; // Já encontrámos a planta desta posição
+                        break; // Só há uma planta por posição, podemos parar
                     }
                 }
             }
@@ -724,7 +721,6 @@ void Jardim::removerPlanta(int l, int c) {
     while (it != plantas.end()) {
         Planta* p = *it;
         if (p->getLinha() == l && p->getColuna() == c) {
-            cout << "A Tesoura cortou a planta " << p->getTipo() << " em " << l << "," << c << "!\n";
             delete p;            // Liberta a memória
             it = plantas.erase(it); // Remove do vetor
             return; // Já cortou, pode sair
