@@ -354,16 +354,19 @@ void Simulador::processarComando(const string &linha) {
         }
     }
     else if (cmd == "apaga") {
-        if (!jardim) {
-            cout << "Crie primeiro o jardim.\n";
-            return;
-        }
-
         string nome;
-        if (iss >> nome) {
-            cout << "Comando 'apaga' reconhecido para nome '" << nome << "', nao implementado ainda.\n";
-        } else {
-            cout << "Uso: apaga <nome>\n";
+        iss >> nome; // Lê o nome da gravação
+
+        if (nome.empty()) {
+            cout << "Erro: Indique o nome da gravacao a apagar (ex: apaga save1)\n";
+        }
+        else {
+            // A função .erase(chave) devolve 1 se apagou, ou 0 se não encontrou nada.
+            if (copias.erase(nome) > 0) {
+                cout << "A copia do jardim '" << nome << "' foi apagada da memoria.\n";
+            } else {
+                cout << "Erro: Nao existe nenhuma copia com o nome '" << nome << "'.\n";
+            }
         }
     }
     else if (cmd == "executa") {
