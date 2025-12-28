@@ -7,8 +7,8 @@
 
 
 class Cacto : public Planta {
-    int instantesComSoloMolhado = 0;
-    int instantesSemNutrientes = 0;
+    int instantesComSoloMolhado = Settings::Cacto::morre_agua_solo_instantes;
+    int instantesSemNutrientes = Settings::Cacto::morre_nutrientes_solo_instantes;
 
 public:
     Cacto(int l, int c)

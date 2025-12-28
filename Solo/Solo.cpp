@@ -1,12 +1,13 @@
 
 #include "Solo.h"
 #include <cstdlib>
+#include "../Settings.h"
 
 using namespace std;
 
 Solo::Solo() {
-    agua = 80 + rand() % 21;        // [80, 100]
-    nutrientes = 40 + rand() % 11;   // [40, 50]
+    agua = Settings::Jardim::agua_min + rand() % (Settings::Jardim::agua_max - Settings::Jardim::agua_min + 1);     // [80, 100]
+    nutrientes = Settings::Jardim::nutrientes_min + rand() % (Settings::Jardim::nutrientes_max - Settings::Jardim::nutrientes_min + 1);
 }
 
 int Solo::getAgua() const { return agua; }
