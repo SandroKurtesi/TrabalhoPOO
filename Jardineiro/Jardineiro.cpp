@@ -9,6 +9,15 @@ int Jardineiro::getLinha() const { return linha; }
 int Jardineiro::getColuna() const { return coluna; }
 
 
+
+
+void Jardineiro::resetTurno() {
+    movimentosTurno = 0;
+    colheitasNesteTurno = 0;
+    plantacoesTurno = 0;
+    entradasTurno = 0;
+    saidasTurno = 0;
+}
 // Adiciona ao vetor
 void Jardineiro::guardarFerramenta(Ferramenta* f) {
     // Define a posição como -1 (está no bolso, não no chão)
@@ -22,6 +31,8 @@ const vector<Ferramenta*>& Jardineiro::getInventario() const {
 }
 
 void Jardineiro::entra(int l, int c, int maxLinhas, int maxColunas) {
+
+    if (!podeEntrar()) { std::cout << "Ja entrou neste turno!\n"; return; }
     if (l < 0 || l >= maxLinhas || c < 0 || c >= maxColunas) {
         cout << "Posicao fora dos limites do jardim.\n";
         return;
@@ -30,35 +41,62 @@ void Jardineiro::entra(int l, int c, int maxLinhas, int maxColunas) {
     linha = l;
     coluna = c;
     dentro = true;
+    registarEntrada();
 }
 
 void Jardineiro::sai() {
-    if (!dentro) {
-        cout << "O jardineiro já está fora do jardim.\n";
-        return;
-    }
+    if (!dentro) return;
+    if (!podeSair()) { std::cout << "Ja saiu neste turno!\n"; return; }
     dentro = false;
-    cout << "O jardineiro saiu do jardim.\n";
+    registarSaida();
 }
 
 void Jardineiro::moverCima() {
     if (!dentro) return;
-    if (linha > 0) linha--;
+    if (!podeMover()) { std::cout << "Cansado! (Max 10 movimentos)\n"; return; }
+
+    if (linha > 0) {
+        linha--;
+        registarMovimento(); }
 }
 
 void Jardineiro::moverBaixo(int maxLinhas) {
     if (!dentro) return;
-    if (linha < maxLinhas - 1) linha++;
+    if (!podeMover()) {
+        std::cout << "Cansado! (Max 10 movimentos)\n";
+        return;
+    }
+
+    if (linha < maxLinhas - 1) {
+        linha++;
+        registarMovimento();
+    };
 }
 
 void Jardineiro::moverEsquerda() {
     if (!dentro) return;
-    if (coluna > 0) coluna--;
+    if (!podeMover()) {
+        std::cout << "Cansado! (Max 10 movimentos)\n";
+        return;
+    }
+
+    if (coluna > 0) {
+        coluna--;
+        registarMovimento();
+    }
 }
 
 void Jardineiro::moverDireita(int maxColunas) {
     if (!dentro) return;
-    if (coluna < maxColunas - 1) coluna++;
+    if (!podeMover()) {
+        std::cout << "Cansado! (Max 10 movimentos)\n";
+        return;
+    }
+
+    if (coluna < maxColunas - 1){
+        coluna++;
+        registarMovimento();
+    }
 }
 
 // Tenta ativar uma ferramenta do inventário pelo ID
@@ -107,4 +145,23 @@ void Jardineiro::removerFerramentaDaMao() {
     // Esvazia a mão (mas NÃO faz delete, isso é feito por quem chama esta função)
     ferramentaNaMao = nullptr;
 }
+
+bool Jardineiro::podeMover() const { return movimentosTurno < Settings::Jardineiro::max_movimentos; }
+void Jardineiro::registarMovimento() { movimentosTurno++; }
+
+// --- COLHEITA (MAX 5) ---
+bool Jardineiro::podeColher() const { return colheitasNesteTurno < Settings::Jardineiro::max_colheitas; }
+void Jardineiro::registarColheita() { colheitasNesteTurno++; }
+
+// --- PLANTAR (MAX 2) ---
+bool Jardineiro::podePlantar() const { return plantacoesTurno < Settings::Jardineiro::max_plantacoes; }
+void Jardineiro::registarPlantacao() { plantacoesTurno++; }
+
+// --- ENTRAR (MAX 1) ---
+bool Jardineiro::podeEntrar() const { return entradasTurno < Settings::Jardineiro::max_entradas_saidas; }
+void Jardineiro::registarEntrada() { entradasTurno++; }
+
+// --- SAIR (MAX 1) ---
+bool Jardineiro::podeSair() const { return saidasTurno < Settings::Jardineiro::max_entradas_saidas; }
+void Jardineiro::registarSaida() { saidasTurno++; }
 

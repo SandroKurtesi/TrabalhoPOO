@@ -235,7 +235,7 @@ void Simulador::processarComando(const string &linha) {
                 cout << "Planta inserida com sucesso.\n";
                 jardim->mostrar(); // Mostra o jardim atualizado logo de seguida
             } else {
-                cout << "Erro: Posicao invalida, ocupada ou tipo desconhecido.\n";
+                cout << "Erro: Posicao invalida, ocupada,limite excedido ou tipo desconhecido.\n";
             }
         } else {
             cout << "Uso: planta <lc> <tipo> (ex: planta fb c)\n";

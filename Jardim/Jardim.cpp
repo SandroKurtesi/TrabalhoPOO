@@ -167,6 +167,11 @@ bool Jardim::adicionarPlanta(const std::string& tipo, int l, int c) {
         return false;
     }
 
+    if (!jardineiro.podePlantar()) {
+        cout << "O jardineiro nao pode plantar mais neste turno (Max 2).\n";
+        return false;
+    }
+
     // 2. Verificar se já existe uma planta nessa posição
     for (Planta* p : plantas) {
         if (p->getLinha() == l && p->getColuna() == c) {
@@ -195,6 +200,7 @@ bool Jardim::adicionarPlanta(const std::string& tipo, int l, int c) {
     // 4. Guardar na lista se foi criada com sucesso
     if (nova != nullptr) {
         plantas.push_back(nova);
+        jardineiro.registarPlantacao();
         return true;
     }
 

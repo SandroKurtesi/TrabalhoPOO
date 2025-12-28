@@ -15,7 +15,13 @@ class Jardineiro {
     std::vector<Ferramenta*> inventario;
     Ferramenta* ferramentaNaMao = nullptr;
 
+
+    int movimentosTurno = 0;
     int colheitasNesteTurno = 0;
+    int plantacoesTurno = 0;
+    int entradasTurno = 0;
+    int saidasTurno = 0;
+
 public:
     Jardineiro() = default; // indica ao compilador para disponibilizar o construtor por omissão
 
@@ -45,18 +51,11 @@ public:
 
     Ferramenta* getFerramentaNaMao() const { return ferramentaNaMao; }
 
-    bool podeColher() const {
-        return colheitasNesteTurno < Settings::Jardineiro::max_colheitas;
-    }
-    void registarColheita() {
-        colheitasNesteTurno++;
-    }
+    bool podeColher() const ;
+    void registarColheita() ;
 
     // Descansa (reset ao contador quando o tempo avança)
-    void resetTurno() {
-        colheitasNesteTurno = 0;
-    }
-
+    void resetTurno() ;
     void limparMochila() {
         for (Ferramenta* f : inventario) {
             delete f;
@@ -64,6 +63,19 @@ public:
         inventario.clear();
         ferramentaNaMao = nullptr;
     }
+
+    bool podeMover() const;
+    void registarMovimento();
+
+
+    bool podePlantar() const;
+    void registarPlantacao();
+
+    bool podeEntrar() const;
+    void registarEntrada();
+
+    bool podeSair() const;
+    void registarSaida();
 
 };
 
