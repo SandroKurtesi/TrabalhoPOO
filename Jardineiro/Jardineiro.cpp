@@ -94,3 +94,17 @@ void Jardineiro::largarFerramenta() {
     }
 }
 
+void Jardineiro::removerFerramentaDaMao() {
+    if (ferramentaNaMao == nullptr) return;
+
+    // Procura a ferramenta no inventário e remove-a do vetor
+    for (auto it = inventario.begin(); it != inventario.end(); ++it) {
+        if (*it == ferramentaNaMao) {
+            inventario.erase(it);
+            break;
+        }
+    }
+    // Esvazia a mão (mas NÃO faz delete, isso é feito por quem chama esta função)
+    ferramentaNaMao = nullptr;
+}
+

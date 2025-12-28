@@ -40,6 +40,9 @@ public:
     bool pegarFerramenta(int id);
     void largarFerramenta();
 
+
+    void removerFerramentaDaMao();
+
     Ferramenta* getFerramentaNaMao() const { return ferramentaNaMao; }
 
     bool podeColher() const {

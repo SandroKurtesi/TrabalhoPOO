@@ -387,13 +387,50 @@ void Jardim::avancaInstante() {
         Ferramenta* f = jardineiro.getFerramentaNaMao();
 
         if (f != nullptr) {
-            // Verifica se é uma Tesoura (pelo tipo ou cast)
-            if (f->getTipo() == "Tesoura") { // Ou verifica o ID se preferires
-                removerPlanta(jardineiro.getLinha(), jardineiro.getColuna());
+            // A. TESOURA (Só corta Ervas Daninhas)
+            if (f->getTipo() == "Tesoura") {
+                // Como não tens getPlantaEm, procuramos manualmente no vetor
+                for (Planta* p : plantas) {
+                    // Verifica se a planta está na mesma posição do jardineiro
+                    if (p->getLinha() == jardineiro.getLinha() &&
+                        p->getColuna() == jardineiro.getColuna()) {
+
+                        // O GRANDE TESTE: É FEIA?
+                        if (p->getTipo() == "ErvaDaninha") {
+                            cout << "ZAS! Cortaste uma Erva Daninha.\n";
+                            removerPlanta(jardineiro.getLinha(), jardineiro.getColuna());
+                        } else {
+                            // cout << "A tesoura nao corta plantas bonitas como " << p->getTipo() << "!\n";
+                        }
+                        break; // Já encontrámos a planta desta posição
+                    }
+                }
             }
+                // B. OUTRAS FERRAMENTAS (Regador, Adubo, Z)
             else {
-                // Se for Adubo ou Regador, usa normalmente no solo
+                // 1. Usar a ferramenta
                 f->usar(grelha[jardineiro.getLinha()][jardineiro.getColuna()]);
+
+                // 2. Verificar se acabou e deitar fora
+                bool lixo = false;
+
+                if (f->getTipo() == "Regador") {
+                    Regador* r = (Regador*)f; // Cast para aceder à capacidade
+                    // Verifica se a capacidade (agua) chegou a 0
+                    // NOTA: Tens de ter int getAgua() ou similar no Regador.h
+                    if (r->getAgua() <= 0) lixo = true;
+                }
+                else if (f->getTipo() == "Adubo") {
+                    Adubo* a = (Adubo*)f;
+                    // NOTA: Tens de ter int getQuantidade() ou similar no Adubo.h
+                    if (a->getQuantidade() <= 0) lixo = true;
+                }
+
+                if (lixo) {
+                    cout << "A ferramenta " << f->getTipo() << " acabou e foi deitada fora!\n";
+                    jardineiro.removerFerramentaDaMao(); // Tira da mão
+                    delete f; // Apaga da memória
+                }
             }
         }
     }

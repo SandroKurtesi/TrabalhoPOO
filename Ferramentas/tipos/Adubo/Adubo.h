@@ -13,6 +13,8 @@ public:
     void usar(Solo& solo) override;
     std::string getTipo() const override { return "Adubo"; }
     char getRepresentacao() const override { return 'a'; }
+
+    int getQuantidade() const { return quantidade; }
 };
 
 #endif //TP_ADUBO_H
