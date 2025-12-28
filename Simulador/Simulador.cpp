@@ -159,11 +159,17 @@ void Simulador::processarComando(const string &linha) {
             int l = tolower(pos[0]) - 'a';
             int c = tolower(pos[1]) - 'a';
 
+            int raio = 0; // Por defeito é 0 (apenas a célula)
 
-            jardim->infoSolo(l, c);
+            // Tenta ler o raio. Se não houver número, o 'iss' falha mas não faz mal,
+            // o raio mantém-se 0 e mostramos só uma célula.
+            iss >> raio;
+
+            // Chama a função com raio que implementaste no Jardim.cpp
+            jardim->mostrarSolo(l, c, raio);
 
         } else {
-            cout << "Uso: lsolo <lc> (ex: lsolo aa)\n";
+            cout << "Uso: lsolo <lc> [raio] (ex: lsolo aa 2)\n";
         }
     }
     else if (cmd == "lferr") {

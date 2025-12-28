@@ -43,6 +43,7 @@ public:
     Solo& getSolo(int l, int c) const;
 
     bool colherPlanta(int l, int c);
+    void mostrarSolo(int l,int c,int raio);
 
     void avancaInstante();
 
@@ -56,6 +57,8 @@ public:
     std::string getEstadoComoString() const;
 
     int contarVizinhosOcupados(int l, int c);
+
+
 
 
 };

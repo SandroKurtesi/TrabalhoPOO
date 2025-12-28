@@ -421,7 +421,13 @@ void Jardim::avancaInstante() {
 
                         // O GRANDE TESTE: É FEIA?
                         if (p->getTipo() == "ErvaDaninha") {
-                            cout << "ZAS! Cortaste uma Erva Daninha.\n";
+                            // Conversão para Letras
+                            char lin = 'A' + jardineiro.getLinha();
+                            char col = 'A' + jardineiro.getColuna();
+
+                            cout << "A Tesoura cortou a planta ErvaDaninha em "
+                                 << lin << col << "!\n";
+
                             removerPlanta(jardineiro.getLinha(), jardineiro.getColuna());
                         } else {
                             // cout << "A tesoura nao corta plantas bonitas como " << p->getTipo() << "!\n";
@@ -832,4 +838,30 @@ bool Jardim::carregarEstado(const string& estado) {
     }
 
     return true;
+}
+
+void Jardim::mostrarSolo(int l, int c, int raio) {
+    // Se o raio for 0 (ou negativo), mostra só a célula pedida
+    if (raio <= 0) {
+        infoSolo(l, c);
+        return;
+    }
+
+    cout << "--- INFO SOLO COM RAIO " << raio << " CENTRADO EM "
+         << (char)('A' + l) << (char)('A' + c) << " ---\n";
+
+    // Calcula os limites do quadrado sem sair do mapa
+    // (Usa ternários ou std::max/min se tiveres <algorithm>, ou ifs simples)
+    int inicioL = (l - raio < 0) ? 0 : l - raio;
+    int fimL    = (l + raio >= linhas) ? linhas - 1 : l + raio;
+    int inicioC = (c - raio < 0) ? 0 : c - raio;
+    int fimC    = (c + raio >= colunas) ? colunas - 1 : c + raio;
+
+    for (int i = inicioL; i <= fimL; i++) {
+        for (int j = inicioC; j <= fimC; j++) {
+            // Reutiliza a tua função que já imprime tudo bonito!
+            infoSolo(i, j);
+            cout << "-----------------------------\n";
+        }
+    }
 }
