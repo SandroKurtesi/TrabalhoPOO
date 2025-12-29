@@ -8,8 +8,15 @@ using namespace std;
 void Roseira::atualizar(Solo &solo) {
 
     // O enunciado diz: "perde 4 unidades de água e 4 de nutrientes"
-    this->agua -= Settings::Roseira::perda_agua;
-    this->nutrientes -= Settings::Roseira::perda_nutrientes;
+    if (this->agua >= Settings::Roseira::perda_agua)
+        this->agua -= Settings::Roseira::perda_agua;
+    else
+        this->agua = 0;
+
+    if (this->nutrientes >= Settings::Roseira::perda_nutrientes)
+        this->nutrientes -= Settings::Roseira::perda_nutrientes;
+    else
+        this->nutrientes = 0;
 
 
     // O enunciado diz: "absorve 5 unidades de água do solo (se existir)"
@@ -41,8 +48,8 @@ void Roseira::atualizar(Solo &solo) {
 
 
     // Morre se: agua == 0, nutr == 0, ou nutr > 199
-    if (this->agua <= Settings::Roseira::morre_agua_menor ||
-        this->nutrientes <= Settings::Roseira::morre_nutrientes_menor ||
+    if (this->agua < Settings::Roseira::morre_agua_menor ||
+        this->nutrientes < Settings::Roseira::morre_nutrientes_menor ||
         this->nutrientes > Settings::Roseira::morre_nutrientes_maior)
     {
         this->viva = false;
