@@ -39,7 +39,7 @@ void Cacto::atualizar(Solo &solo) {
     }
 
     // Regra B: Falta de Nutrientes (0)
-    if (solo.getNutrientes() <= Settings::Cacto::morre_nutrientes_solo_menor) {
+    if (solo.getNutrientes() < Settings::Cacto::morre_nutrientes_solo_menor) {
         this->instantesSemNutrientes++;
     } else {
         this->instantesSemNutrientes = 0; // Reset se houver comida
@@ -47,7 +47,7 @@ void Cacto::atualizar(Solo &solo) {
 
     // 3. MORTE EFETIVA
     if (this->instantesComSoloMolhado >= Settings::Cacto::morre_agua_solo_instantes ||
-        this->instantesSemNutrientes >= Settings::Cacto::morre_nutrientes_solo_instantes) {
+        this->instantesSemNutrientes > Settings::Cacto::morre_nutrientes_solo_instantes) {
 
         this->viva = false;
 
