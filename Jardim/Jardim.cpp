@@ -558,10 +558,12 @@ void Jardim::avancaInstante() {
                 if (tipo == "Roseira") {
                     bebe = new Roseira(filhoL, filhoC);
                     int aguaTotal = mae->getAgua();
-                    mae->setNutrientes(100);
-                    mae->setAgua(aguaTotal / 2);
-                    bebe->setNutrientes(25);
-                    bebe->setAgua(aguaTotal / 2);
+                    mae->setNutrientes(Settings::Roseira::original_nutrientes);
+                    int aguaMae = (aguaTotal * Settings::Roseira::original_agua_percentagem) / 100;
+                    mae->setAgua(aguaMae);
+                    bebe->setNutrientes(Settings::Roseira::nova_nutrientes);
+                    int aguaBebe = (aguaTotal * Settings::Roseira::nova_agua_percentagem) / 100;
+                    bebe->setAgua(aguaBebe);
                 }
                 else if (tipo == "Cacto") {
                     bebe = new Cacto(filhoL, filhoC);
@@ -574,6 +576,8 @@ void Jardim::avancaInstante() {
                 }
                 else if (tipo == "ErvaDaninha") {
                     bebe = new ErvaDaninha(filhoL, filhoC);
+                    bebe->setNutrientes(Settings::ErvaDaninha::nova_nutrientes);
+                    bebe->setAgua(5);
                 }
                 else if (tipo == "PlantaExotica") {
                     bebe = new PlantaExotica(filhoL, filhoC);

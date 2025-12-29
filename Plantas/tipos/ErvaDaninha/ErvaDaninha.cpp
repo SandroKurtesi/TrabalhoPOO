@@ -5,6 +5,8 @@
 
 using namespace std;
 
+
+
 void ErvaDaninha::atualizar(Solo &solo) {
 
     this->idade++;
