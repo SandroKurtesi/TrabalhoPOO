@@ -71,12 +71,20 @@ void Simulador::processarComando(const string &linha) {
             cout << "Crie primeiro o jardim.\n";
             return;
         }
+        if (!jardim->getJardineiro().estaDentro()) {
+            cout << "O jardineiro ainda nao entrou no jardim! Use o comando 'entra <lc>'.\n";
+            return;
+        }
         jardim->getJardineiro().sai();
         jardim->mostrar();
     }
     else if (cmd == "c") {
         if (!jardim) {
             cout << "Crie primeiro o jardim.\n";
+            return;
+        }
+        if (!jardim->getJardineiro().estaDentro()) {
+            cout << "O jardineiro ainda nao entrou no jardim! Use o comando 'entra <lc>'.\n";
             return;
         }
         jardim->getJardineiro().moverCima();
@@ -88,6 +96,10 @@ void Simulador::processarComando(const string &linha) {
             cout << "Crie primeiro o jardim.\n";
             return;
         }
+        if (!jardim->getJardineiro().estaDentro()) {
+            cout << "O jardineiro ainda nao entrou no jardim! Use o comando 'entra <lc>'.\n";
+            return;
+        }
         jardim->getJardineiro().moverBaixo(jardim->getLinhas());
         jardim->verificarFerramentasNoChao();
         jardim->mostrar();
@@ -97,6 +109,10 @@ void Simulador::processarComando(const string &linha) {
             cout << "Crie primeiro o jardim.\n";
             return;
         }
+        if (!jardim->getJardineiro().estaDentro()) {
+            cout << "O jardineiro ainda nao entrou no jardim! Use o comando 'entra <lc>'.\n";
+            return;
+        }
         jardim->getJardineiro().moverEsquerda();
         jardim->verificarFerramentasNoChao();
         jardim->mostrar();
@@ -104,6 +120,10 @@ void Simulador::processarComando(const string &linha) {
     else if (cmd == "d") {
         if (!jardim) {
             cout << "Crie primeiro o jardim.\n";
+            return;
+        }
+        if (!jardim->getJardineiro().estaDentro()) {
+            cout << "O jardineiro ainda nao entrou no jardim! Use o comando 'entra <lc>'.\n";
             return;
         }
         jardim->getJardineiro().moverDireita(jardim->getColunas());
