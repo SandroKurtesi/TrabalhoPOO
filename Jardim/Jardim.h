@@ -33,14 +33,14 @@ public:
     void verificarFerramentasNoChao();
 
     bool adicionarPlanta(const std::string& tipo, int l, int c);
-    bool adicionarFerramenta(const std::string& tipo, int l, int c);
+
 
     void mostrar() const;
     void infoSolo(int l, int c) const;
     Jardineiro& getJardineiro();
     int getLinhas() const;
     int getColunas() const;
-    Solo& getSolo(int l, int c) const;
+
 
     bool colherPlanta(int l, int c);
     void mostrarSolo(int l,int c,int raio);

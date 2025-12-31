@@ -179,13 +179,12 @@ void Simulador::processarComando(const string &linha) {
             int l = tolower(pos[0]) - 'a';
             int c = tolower(pos[1]) - 'a';
 
-            int raio = 0; // Por defeito é 0 (apenas a célula)
+            int raio = 0;
 
-            // Tenta ler o raio. Se não houver número, o 'iss' falha mas não faz mal,
-            // o raio mantém-se 0 e mostramos só uma célula.
+
             iss >> raio;
 
-            // Chama a função com raio que implementaste no Jardim.cpp
+
             jardim->mostrarSolo(l, c, raio);
 
         } else {
@@ -196,7 +195,7 @@ void Simulador::processarComando(const string &linha) {
         if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
         const vector<Ferramenta*>& mochila = jardim->getJardineiro().getInventario();
-        // Obter a ferramenta ativa para comparar
+
         Ferramenta* ativa = jardim->getJardineiro().getFerramentaNaMao();
 
         cout << "=== INVENTARIO ===\n";
@@ -206,7 +205,6 @@ void Simulador::processarComando(const string &linha) {
             for (Ferramenta* f : mochila) {
                 cout << " - " << f->getTipo() << " (ID: " << f->getId() << ")";
 
-                // Se for a ferramenta ativa, mostra indicação
                 if (f == ativa) {
                     cout << " [NA MAO]";
                 }
@@ -222,13 +220,12 @@ void Simulador::processarComando(const string &linha) {
             int l = tolower(pos[0]) - 'a';
             int c = tolower(pos[1]) - 'a';
 
-            // Chama a função do Jardim
+
             if (jardim->colherPlanta(l, c)) {
                 cout << "Planta colhida com sucesso.\n";
                 jardim->mostrar();
             }
-            // (A função colherPlanta já imprime mensagens de erro especificas,
-            // por isso não precisamos de muitos couts aqui)
+
         } else {
             cout << "Uso: colhe <lc> (ex: colhe aa)\n";
         }
@@ -240,20 +237,18 @@ void Simulador::processarComando(const string &linha) {
         }
 
         string pos, tipo;
-        // Lê a posição (ex: "aa") e o tipo (ex: "r")
+
         if (iss >> pos >> tipo && pos.size() == 2) {
 
-            // Converter as letras em coordenadas (a->0, b->1, etc.)
-            // Usamos tolower para funcionar com 'A' ou 'a'
+
             int l = tolower(pos[0]) - 'a';
             int c = tolower(pos[1]) - 'a';
 
-            // Tenta adicionar a planta no Jardim
-            // A função adicionarPlanta já verifica se a posição é válida
-            // e se o tipo existe.
+
+
             if (jardim->adicionarPlanta(tipo, l, c)) {
                 cout << "Planta inserida com sucesso.\n";
-                jardim->mostrar(); // Mostra o jardim atualizado logo de seguida
+                jardim->mostrar();
             } else {
                 cout << "Erro: Posicao invalida, ocupada,limite excedido ou tipo desconhecido.\n";
             }
@@ -264,7 +259,7 @@ void Simulador::processarComando(const string &linha) {
     else if (cmd == "larga") {
         if (!jardim) { cout << "Crie primeiro o jardim.\n"; return; }
 
-        // Verifica se tem algo para largar
+
         if (jardim->getJardineiro().getFerramentaNaMao() != nullptr) {
             jardim->getJardineiro().largarFerramenta();
             cout << "Ferramenta guardada na mochila.\n";
@@ -277,7 +272,7 @@ void Simulador::processarComando(const string &linha) {
 
         int id;
         if (iss >> id) {
-            // Chama a função do Jardineiro
+
             if (jardim->getJardineiro().pegarFerramenta(id)) {
                 cout << "Ferramenta " << id << " esta agora na mao.\n";
             } else {
@@ -297,9 +292,9 @@ void Simulador::processarComando(const string &linha) {
         if (iss >> tipo) {
             Ferramenta* nova = nullptr;
 
-            // Factory de Ferramentas (igual à do Jardim)
+
             if (tipo == "regador" || tipo == "g") {
-                nova = new Regador(); // Sem coordenadas = vai para o inventário
+                nova = new Regador();
             }
             else if (tipo == "adubo" || tipo == "a") {
                 nova = new Adubo();
@@ -312,7 +307,7 @@ void Simulador::processarComando(const string &linha) {
             }
 
             if (nova != nullptr) {
-                // --- AQUI ESTÁ A LIGAÇÃO ---
+
                 jardim->getJardineiro().guardarFerramenta(nova);
                 cout << "Ferramenta " << nova->getTipo() << " comprada e guardada no inventario.\n";
             } else {
@@ -329,12 +324,12 @@ void Simulador::processarComando(const string &linha) {
         }
 
         string nome;
-        iss >> nome; // Lê o nome da gravação (ex: "teste")
+        iss >> nome;
 
         if (nome.empty()) {
             cout << "Erro: Indique o nome da gravacao (ex: grava teste)\n";
         } else {
-            // Guarda o estado atual na memória (mapa)
+
             copias[nome] = jardim->getEstadoComoString();
             cout << "Jardim gravado em memoria com o nome '" << nome << "'.\n";
         }
@@ -346,22 +341,22 @@ void Simulador::processarComando(const string &linha) {
         if (nome.empty()) {
             cout << "Erro: Indique o nome da gravacao (ex: recupera checkpoint)\n";
         } else {
-            // Verifica se a gravação existe no mapa
+
             if (copias.find(nome) != copias.end()) {
 
-                // Se o jardim ainda não existir (caso tenhas reiniciado), cria um novo
+
                 if (!jardim) {
                     stringstream ss(copias[nome]);
                     string t; int l, c;
-                    ss >> t >> l >> c; // Lê as dimensões da gravação
+                    ss >> t >> l >> c;
                     jardim = new Jardim(l, c);
                 }
 
-                // Carrega o estado
+
                 if (jardim->carregarEstado(copias[nome])) {
                     cout << "Jogo recuperado de '" << nome << "'.\n";
 
-                    // REQUISITO: "A cópia é eliminada."
+
                     copias.erase(nome);
 
                     jardim->mostrar();
@@ -375,13 +370,13 @@ void Simulador::processarComando(const string &linha) {
     }
     else if (cmd == "apaga") {
         string nome;
-        iss >> nome; // Lê o nome da gravação
+        iss >> nome;
 
         if (nome.empty()) {
             cout << "Erro: Indique o nome da gravacao a apagar (ex: apaga save1)\n";
         }
         else {
-            // A função .erase(chave) devolve 1 se apagou, ou 0 se não encontrou nada.
+
             if (copias.erase(nome) > 0) {
                 cout << "A copia do jardim '" << nome << "' foi apagada da memoria.\n";
             } else {

@@ -8,24 +8,24 @@ class Ferramenta {
 protected:
     static int contador;
     int id;
-    bool ativa = false; // se está na mão do jardineiro
+    bool ativa = false;
 
-    // --- NOVOS: Coordenadas ---
+
     int linha = -1;
     int coluna = -1;
 
 public:
-    // Construtor atualizado
-    Ferramenta(int l = -1, int c = -1); // Default para -1 (inventário)
+
+    Ferramenta(int l = -1, int c = -1);
 
     virtual ~Ferramenta() = default;
 
-    // Getters
+
     int getId() const { return id; }
     int getLinha() const { return linha; }
     int getColuna() const { return coluna; }
 
-    // Setters (importante para quando apanhas/largas)
+
     void setPosicao(int l, int c) { linha = l; coluna = c; }
     void setId(int i) { id = i; }
 

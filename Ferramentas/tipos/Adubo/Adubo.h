@@ -7,7 +7,7 @@ class Adubo : public Ferramenta {
     int quantidade = Settings::Adubo::capacidade;
 
 public:
-    // Construtor recebe coordenadas
+
     Adubo(int l = -1, int c = -1);
 
     void usar(Solo& solo) override;

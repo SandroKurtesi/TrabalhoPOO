@@ -5,7 +5,7 @@
 
 class Tesoura : public Ferramenta {
 public:
-    // Construtor recebe coordenadas
+
     Tesoura(int l = -1, int c = -1);
 
     void usar(Solo& solo) override;

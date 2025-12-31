@@ -7,7 +7,7 @@ class Regador : public Ferramenta {
     int capacidade = Settings::Regador::capacidade;
 
 public:
-    // Construtor recebe coordenadas
+
     Regador(int l = -1, int c = -1);
 
     void usar(Solo& solo) override;

@@ -23,7 +23,7 @@ class Jardineiro {
     int saidasTurno = 0;
 
 public:
-    Jardineiro() = default; // indica ao compilador para disponibilizar o construtor por omissão
+    Jardineiro() = default;
 
     bool estaDentro() const;
     int getLinha() const;
@@ -54,7 +54,7 @@ public:
     bool podeColher() const ;
     void registarColheita() ;
 
-    // Descansa (reset ao contador quando o tempo avança)
+
     void resetTurno() ;
     void limparMochila() {
         for (Ferramenta* f : inventario) {

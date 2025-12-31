@@ -31,11 +31,11 @@ public:
     virtual bool podemMultiplicar(const Solo& solo) const = 0;
     virtual char getRepresentacao() const = 0;
     virtual std::string getTipo() const = 0;
-    // Método que o Jardim chama quando a reprodução tem sucesso
-    virtual void posReproducao() {} // Por defeito não faz nada
+
+    virtual void posReproducao() {}
 
 
-    // getters
+
     bool estaViva() const { return viva; }
     int getAgua() const { return agua; }
     int getNutrientes() const { return nutrientes; }

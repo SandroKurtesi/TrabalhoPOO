@@ -16,7 +16,7 @@ public:
     void atualizar(Solo& solo) override;
     bool podemMultiplicar(const Solo &solo) const override;
     void posReproducao() override {
-        ultimoMultiplicar = 0; // Reset ao contador!
+        ultimoMultiplicar = 0;
     }
 
     char getRepresentacao() const override { return 'e'; }
