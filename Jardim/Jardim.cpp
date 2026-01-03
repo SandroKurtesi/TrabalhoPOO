@@ -118,7 +118,7 @@ void Jardim::spawnFerramentaAleatoria() {
     } while (ocupada);
 
 
-    int tipo = rand() % 4; // 0, 1, 2, 3
+    int tipo = rand() % 4;
     Ferramenta* nova = nullptr;
 
     if (tipo == 0) nova = new Regador(l, c);
@@ -161,7 +161,7 @@ void Jardim::verificarFerramentasNoChao() {
 
 
 bool Jardim::adicionarPlanta(const std::string& tipo, int l, int c) {
-    // 1. Validar Limites
+
     if (l < 0 || l >= linhas || c < 0 || c >= colunas) {
         return false;
     }
@@ -231,7 +231,7 @@ void Jardim::mostrar() const {
 
 
             if (jardineiro.estaDentro() && i == jardineiro.getLinha() && j == jardineiro.getColuna()) {
-                cout << jardineiro.getRepresentacao(); // Desenha '*'
+                cout << jardineiro.getRepresentacao();
                 desenhou = true;
             }
 
@@ -239,7 +239,7 @@ void Jardim::mostrar() const {
             if (!desenhou) {
                 for (Planta* p : plantas) {
                     if (p->getLinha() == i && p->getColuna() == j) {
-                        cout << p->getRepresentacao(); // Desenha 'r', 'c', etc.
+                        cout << p->getRepresentacao();
                         desenhou = true;
                         break;
                     }
@@ -267,7 +267,7 @@ void Jardim::mostrar() const {
     }
 }
 void Jardim::infoSolo(int l, int c) const {
-    // 1. Validar
+
     if (l < 0 || l >= linhas || c < 0 || c >= colunas) {
         cout << "Coordenadas invalidas.\n";
         return;
@@ -281,12 +281,12 @@ void Jardim::infoSolo(int l, int c) const {
 
     cout << "Ocupantes:\n";
 
-    // a) Jardineiro?
+
     if (jardineiro.estaDentro() && jardineiro.getLinha() == l && jardineiro.getColuna() == c) {
         cout << " - [JARDINEIRO]\n";
     }
 
-    // b) Planta?
+
     for (Planta* p : plantas) {
         if (p->getLinha() == l && p->getColuna() == c) {
             cout << " - [PLANTA] " << p->getTipo() << " (" << p->getRepresentacao() << ")\n";
@@ -294,7 +294,7 @@ void Jardim::infoSolo(int l, int c) const {
         }
     }
 
-    // c) Ferramentas?
+
     for (Ferramenta* f : ferramentas) {
         if (f->getLinha() == l && f->getColuna() == c) {
             cout << " - [FERRAMENTA] " << f->getTipo() << " (ID: " << f->getId() << ")\n";

@@ -15,7 +15,7 @@ bool Tesoura::tentarCortar(Planta* p) {
 
     if (p->getTipo() == "ErvaDaninha") {
 
-        cout << "ZAS! A Tesoura cortou a planta " << p->getTipo() << "!\n";
+        cout << "A Tesoura cortou a planta " << p->getTipo() << "!\n";
 
         return true;
     }

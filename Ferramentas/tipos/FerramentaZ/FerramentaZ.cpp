@@ -18,7 +18,7 @@ void FerramentaZ::usar(Solo &solo) {
 
         quantidade--;
 
-        cout << "ZAP! FerramentaZ usada. Solo equilibrado (50 A / 50 N). "
+        cout << "FerramentaZ usada. Solo equilibrado (50 A / 50 N). "
              << "Restam " << quantidade << " usos.\n";
     }
     else {

@@ -117,14 +117,14 @@ bool Jardineiro::pegarFerramenta(int id) {
 
     largarFerramenta();
 
-    // 3. Pegar na nova
+
     ferramentaNaMao = encontrada;
     ferramentaNaMao->setAtiva(true);
 
     return true;
 }
 
-// Desativa a ferramenta atual (guarda na mochila)
+
 void Jardineiro::largarFerramenta() {
     if (ferramentaNaMao != nullptr) {
         ferramentaNaMao->setAtiva(false);

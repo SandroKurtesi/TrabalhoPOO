@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// Construtor
+
 Adubo::Adubo(int l, int c) : Ferramenta(l, c) {
 
     quantidade = Settings::Adubo::capacidade;
