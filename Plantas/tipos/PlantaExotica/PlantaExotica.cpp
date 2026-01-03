@@ -14,9 +14,7 @@ PlantaExotica::PlantaExotica(int l, int c) : Planta(l, c) {
 }
 
 
-Planta* PlantaExotica::duplica(int l, int c)const {
-    return new PlantaExotica(l, c);
-}
+
 
 
 void PlantaExotica::atualizar(Solo& solo) {

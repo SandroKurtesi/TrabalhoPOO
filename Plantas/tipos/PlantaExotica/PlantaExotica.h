@@ -14,7 +14,7 @@ public:
     char getRepresentacao() const override { return 'P'; }
 
 
-    Planta* duplica(int l, int c) const ;
+
     void atualizar(Solo& solo) override;
     bool podemMultiplicar(const Solo& solo) const override;
     std::string getTipo() const override { return "PlantaExotica"; }
